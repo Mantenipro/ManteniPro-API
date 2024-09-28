@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 require("dotenv").config();
 
 const server = require("./src/server");
