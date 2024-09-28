@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const express = require('express');
 const createError = require('http-errors');
 const reportUseCase = require('../usecases/report.usecase');

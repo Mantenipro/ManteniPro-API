@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const createError = require('http-errors');
 const Report = require('../models/report.model');
 
