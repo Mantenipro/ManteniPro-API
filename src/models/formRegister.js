@@ -1,14 +1,14 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose')
 
-const modelName = 'userPerfil'; 
+const modelName = 'Register'
 
-const userPerfilSchema = new mongoose.Schema({
-  name: {
+const registerSchema = new mongoose.Schema({
+  companyName: {
     type: String,
     required: true
   },
-  lastname: {
+  fullname: {
     type: String,
     required: true
   },
@@ -23,20 +23,12 @@ const userPerfilSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
-  role: {
+  zipCode: {
     type: String,
     required: true
-  },
-  type: {
-    type: String,
-    required: true
-  },
-  photo: {
-    type: String,
-    required: false
   }
 })
 
-const model = mongoose.model(modelName, userPerfilSchema)
+const model = mongoose.model(modelName, registerSchema)
 
 module.exports = model
