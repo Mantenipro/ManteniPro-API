@@ -10,6 +10,9 @@ const reportRouter = require('./routes/report.router')
 
 const RegisterRouter = require('./routes/register.router')
 
+const activateRouter = require('./routes/activate.router')
+
+
 
 const app = express();
 
@@ -24,6 +27,8 @@ app.use('/auth', authRouter)
 app.use('/report', reportRouter)
 
 app.use('/register', RegisterRouter)
+
+app.use('/activate', activateRouter)
 
 app.get('/', (req, res) => {
     res.json({

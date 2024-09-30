@@ -1,6 +1,9 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose')
-const userPerfil = require('./user.created.perfil') // Importa el modelo userPerfil
+
+const nodemailer = require('nodemailer')
+
+const userPerfil = require('./user.created.perfil')
 
 const modelName = 'Register'
 
@@ -28,25 +31,49 @@ const registerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fechaRegistro: { type: Date, default: Date.now }
+  fechaRegistro: { type: Date, default: Date.now },
+  isActive: {
+    type: Boolean,
+    default: false
+  }
 })
 
-// Middleware para crear un registro en user.created.perfil después de guardar un documento en Register
-registerSchema.post('save', async function (doc) {
-  try {
-    const perfilData = {
-      name: doc.fullname,
-      lastname: 'defaultLastname', // Ajusta según tus necesidades
-      email: doc.email,
-      password: doc.password,
-      role: 'defaultRole', // Ajusta según tus necesidades
-      type: 'defaultType', // Ajusta según tus necesidades
-      photo: 'defaultPhoto' // Ajusta según tus necesidades
-    }
-    await userPerfil.create(perfilData)
-  } catch (err) {
-    console.error('Error creating userPerfil document', err)
+const transporter = nodemailer.createTransport({
+  service: 'gmail', 
+  auth: {
+    user: 'mantenipro6@gmail.com', 
+    pass: 'cwqnmwkddweqioxl'
   }
+})
+
+registerSchema.post('save', function (doc) {
+  process.nextTick(async () => {
+    try {
+      // Enviar el correo de agradecimiento
+      const mailOptions = {
+        from: 'mantenipro6@gmail.com',
+        to: doc.email,
+        subject: 'Gracias por registrarse',
+        text: 'Gracias por registrarse. Tienes 7 días para realizar la activación de tu cuenta.'
+      }
+
+      await transporter.sendMail(mailOptions)
+
+      // Crear el perfil del usuario
+      const perfilData = {
+        name: doc.fullname,
+        lastname: 'defaultLastname',
+        email: doc.email,
+        password: doc.password,
+        role: 'defaultRole',
+        type: 'defaultType',
+        photo: 'defaultPhoto'
+      }
+      await userPerfil.create(perfilData)
+    } catch (error) {
+      console.error('Error in post save hook:', error)
+    }
+  })
 })
 
 const model = mongoose.model(modelName, registerSchema)
