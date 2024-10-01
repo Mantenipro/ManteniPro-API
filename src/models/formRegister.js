@@ -35,7 +35,11 @@ const registerSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: false
-  }
+  },
+  activationDeadline: {
+    type: Date,
+    default: () => Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 días en milisegundos
+  },
 })
 
 const transporter = nodemailer.createTransport({

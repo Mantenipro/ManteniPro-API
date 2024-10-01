@@ -3,15 +3,12 @@ const cors = require('cors');
 const express = require('express');
 
 const usersRouter = require('./routes/users.router')
-
 const authRouter = require('./routes/auth.router')
-
 const reportRouter = require('./routes/report.router')  
-
 const RegisterRouter = require('./routes/register.router')
-
 const activateRouter = require('./routes/activate.router')
-
+const requestPasswordResetRouter = require('./routes/requestReset.js')
+const resetPasswordRouter = require('./routes/resetPassword.js')
 
 
 const app = express();
@@ -27,6 +24,10 @@ app.use('/auth', authRouter)
 app.use('/report', reportRouter)
 
 app.use('/register', RegisterRouter)
+
+app.use('/requestPasswordReset', requestPasswordResetRouter)
+
+app.use('/resetPassword', resetPasswordRouter)
 
 app.use('/activate', activateRouter)
 

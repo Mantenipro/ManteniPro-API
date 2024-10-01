@@ -34,7 +34,9 @@ const userPerfilSchema = new mongoose.Schema({
   photo: {
     type: String,
     required: false
-  }
+  },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 })
 
 const model = mongoose.model(modelName, userPerfilSchema)
