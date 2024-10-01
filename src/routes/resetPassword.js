@@ -10,7 +10,7 @@ router.post('/', async (request, response) => {
   try {
     const user = await Register.findOne({
       resetPasswordToken: token,
-      resetTokenExpiration: { $gt: Date.now() }
+      resetPasswordExpires: { $gt: Date.now() }
     })
 
     if (!user) {
