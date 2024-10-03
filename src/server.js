@@ -7,8 +7,8 @@ const authRouter = require('./routes/auth.router')
 const reportRouter = require('./routes/report.router')  
 const RegisterRouter = require('./routes/register.router')
 const activateRouter = require('./routes/activate.router')
-const requestPasswordResetRouter = require('./routes/requestReset.js')
-const resetPasswordRouter = require('./routes/resetPassword.js')
+const requestPasswordResetRouter = require('./routes/requestReset.router')
+const resetPasswordRouter = require('./routes/resetPassword.router')
 
 
 const app = express();
@@ -31,8 +31,8 @@ app.use('/resetPassword', resetPasswordRouter)
 
 app.use('/activate', activateRouter)
 
-app.get('/', (req, res) => {
-    res.json({
+app.get('/', (request, response) => {
+    response.json({
         message: "ManteniPro APIv1"
     });
 });
