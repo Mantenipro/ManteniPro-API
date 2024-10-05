@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const cors = require('cors');
 const express = require('express');
+require('dotenv').config()
 
 const usersRouter = require('./routes/users.router')
 const authRouter = require('./routes/auth.router')

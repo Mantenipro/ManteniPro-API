@@ -32,10 +32,25 @@ const registerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fechaRegistro: { type: Date, default: Date.now },
-  activationCodeHash: { type: String }, 
-  activationCodeExpiration: { type: Date },
-  isActive: { type: Boolean, default: false }
+  fechaRegistro: {
+    type: Date,
+    default: Date.now
+  },
+  activationCodeHash: {
+    type: String
+  },
+  activationCodeExpiration: {
+    type: Date
+  },
+  isActive: {
+    type: Boolean,
+    default: false
+  },
+  updated_at: {
+    type: Date,
+    require: true,
+    default: Date.now
+  }
 })
 
 const OAuth2 = google.auth.OAuth2
