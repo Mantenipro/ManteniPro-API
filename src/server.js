@@ -11,6 +11,7 @@ const activateRouter = require('./routes/activate.router')
 const requestPasswordResetRouter = require('./routes/requestReset.router')
 const resetPasswordRouter = require('./routes/resetPassword.router')
 const assignmentRouter = require('./routes/assignment.router');
+const paymentRoutes = require('./routes/paymentRoutes')
 
 const app = express();
 
@@ -33,6 +34,8 @@ app.use('/resetPassword', resetPasswordRouter)
 app.use('/activate', activateRouter)
 
 app.use('/assignment', assignmentRouter);
+
+app.use('/payments', paymentRoutes)
 
 app.get('/', (request, response) => {
     response.json({
