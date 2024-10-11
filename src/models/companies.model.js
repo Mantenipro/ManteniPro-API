@@ -2,10 +2,9 @@
 const mongoose = require('mongoose')
 
 const schema = new mongoose.Schema({
-
   name: {
     type: String,
-    require: true,
+    required: true,
     maxLength: 50,
     minLength: 3
   },
@@ -16,7 +15,7 @@ const schema = new mongoose.Schema({
   },
   password: {
     type: String,
-    require: true
+    required: true
   },
   subscription_type: {
     type: mongoose.Schema.Types.ObjectId,
@@ -24,29 +23,23 @@ const schema = new mongoose.Schema({
   },
   phone_number: {
     type: Number,
-    require: true,
+    required: true,
     maxLength: 10,
     minLength: 10
   },
   address: {
     type: String,
-    require: true,
+    required: true,
     maxLength: 250,
     minLength: 10
   },
-  status: {
-    type: String,
-    enum: ['active', 'inactive'],
-    require: true
-  },
-  created_at: {
-    type: Date,
-    require: true,
-    default: Date.now
+  isActive: {
+    type: Boolean,
+    default: false
   },
   updated_at: {
     type: Date,
-    require: true,
+    required: true,
     default: Date.now
   }
 })

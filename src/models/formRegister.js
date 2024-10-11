@@ -44,6 +44,11 @@ const registerSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  created_at: {
+    type: Date,
+    require: true,
+    default: Date.now
+  },
   updated_at: {
     type: Date,
     require: true,

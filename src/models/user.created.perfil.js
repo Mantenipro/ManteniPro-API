@@ -1,6 +1,5 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose')
-
 const modelName = 'userPerfil'; 
 
 const userPerfilSchema = new mongoose.Schema({

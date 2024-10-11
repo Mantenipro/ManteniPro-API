@@ -5,15 +5,21 @@ const jwt = require('../lib/jwt')
 
 async function auth(request, response, next) {
   try {
-    const token = request.headers.authorization
+    const authHeader = request.headers.authorization
 
-    if (!token) {
+    if (!authHeader) {
       throw createError(401, 'JWT is required')
     }
+
+    const token = authHeader.replace('Bearer ', '')
 
     const payload = jwt.verify(token)
 
     const user = await userUseCase.getById(payload.id)
+
+    if (!user) {
+      throw createError(401, 'User not found')
+    }
 
     request.user = user
 

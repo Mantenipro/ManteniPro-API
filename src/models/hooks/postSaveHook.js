@@ -1,9 +1,11 @@
 /* eslint-disable no-undef */
 const userPerfil = require('../user.created.perfil')
+const Company = require('../companies.model') // Cambié "company" a "Company"
 
 async function postSaveHook(doc) {
   process.nextTick(async () => {
     try {
+      // Verifica si el usuario ya tiene un perfil creado
       const existingUser = await userPerfil.findOne({ email: doc.email })
 
       if (existingUser) {
@@ -11,6 +13,7 @@ async function postSaveHook(doc) {
         return
       }
 
+      // Datos para el perfil del usuario
       const perfilData = {
         name: doc.fullname,
         lastname: 'defaultLastname',
@@ -21,26 +24,24 @@ async function postSaveHook(doc) {
         photo: 'defaultPhoto'
       }
 
-      try {
-        await userPerfil.create(perfilData)
-        console.log('Perfil de usuario creado con éxito.')
-      } catch (error) {
-        if (error.code === 11000) {
-          console.error(
-            `Error: El correo ${perfilData.email} ya está registrado como perfil.`
-          )
-        } else if (error.name === 'ValidationError') {
-          console.error(
-            'Error de validación al crear el perfil:',
-            error.message
-          )
-        } else {
-          console.error(
-            'Error inesperado al crear el perfil del usuario:',
-            error
-          )
-        }
+      // Guarda el nuevo perfil de usuario
+      const newUserPerfil = new userPerfil(perfilData)
+      await newUserPerfil.save()
+      console.log('Perfil de usuario creado con éxito.')
+
+      // Datos para la empresa
+      const companyData = {
+        name: doc.companyName,
+        email: doc.email,
+        password: doc.password,
+        address: 'defaultRole',
+        status: doc.status
       }
+
+      // Guarda la nueva compañía
+      const newCompany = new Company(companyData)
+      await newCompany.save()
+      console.log('Compañía creada con éxito.')
     } catch (error) {
       console.error('Error en el post-save hook:', error)
     }
