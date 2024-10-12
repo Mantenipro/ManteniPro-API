@@ -1,43 +1,30 @@
 /* eslint-disable no-undef */
+// backend/routes/checkout.js
 const express = require('express')
 const router = express.Router()
-const stripe = require('../config/stripeConfig')
+const stripe = require('../config/stripeConfig') // Importa tu configuración de Stripe
 
-router.post('/', async (request, response) => {
-  const { plan } = request.body
-
-  console.log('Request body:', request.body) // Verificar el cuerpo de la solicitud
-
-  const plans = {
-    basic: {
-      amount: 999, // $9.99 in cents
-      currency: 'usd'
-    },
-    premium: {
-      amount: 1999, // $19.99 in cents
-      currency: 'usd'
-    }
-  }
-
-  console.log('Selected plan:', plan) // Verificar el plan seleccionado
-  console.log('Plan details:', plans[plan]) // Verificar los detalles del plan
+// Endpoint para crear la sesión de Stripe Checkout
+router.post('/', async (req, res) => {
+  const { priceId } = req.body // Recibe el priceId del frontend
 
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: plans[plan].amount,
-      currency: plans[plan].currency
+    const session = await stripe.checkout.sessions.create({
+      line_items: [
+        {
+          price: priceId, // Usa el priceId que recibes desde el frontend
+          quantity: 1
+        }
+      ],
+      mode: 'subscription', // O "payment" si es un pago único
+      success_url: 'http://localhost:8000/success', // URL de redirección en caso de éxito
+      cancel_url: 'http://localhost:8000/suscription' // URL de redirección en caso de cancelación
     })
 
-    console.log('PaymentIntent created:', paymentIntent) // Verificar la respuesta del paymentIntent
-
-    response.status(200).send({
-      clientSecret: paymentIntent.client_secret
-    })
+    res.json({ id: session.id })
   } catch (error) {
-    console.log('Error creating PaymentIntent:', error) // Capturar y mostrar errores
-    response.status(error).send({
-      error: error.raw.message
-    })
+    console.error('Error creando la sesión de pago:', error)
+    res.status(500).send('Error al crear la sesión de pago')
   }
 })
 

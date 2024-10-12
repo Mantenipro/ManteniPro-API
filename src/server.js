@@ -13,6 +13,7 @@ const resetPasswordRouter = require('./routes/resetPassword.router')
 const assignmentRouter = require('./routes/assignment.router');
 const paymentRoutes = require('./routes/paymentRoutes')
 const companiesRouter = require('./routes/companies.router')
+const productsRouter = require('./routes/products.router')
 
 const app = express();
 
@@ -37,6 +38,8 @@ app.use('/activate', activateRouter)
 app.use('/assignment', assignmentRouter);
 
 app.use('/payments', paymentRoutes)
+
+app.use('/products', productsRouter)
 
 app.use('/companies', companiesRouter)
 
