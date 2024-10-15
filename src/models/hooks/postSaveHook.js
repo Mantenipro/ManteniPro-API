@@ -13,28 +13,13 @@ async function postSaveHook(doc) {
         return
       }
 
-      // Datos para el perfil del usuario
-      const perfilData = {
-        name: doc.fullname,
-        lastname: 'defaultLastname',
-        email: doc.email,
-        password: doc.password,
-        role: 'defaultRole',
-        type: 'defaultType',
-        photo: 'defaultPhoto'
-      }
-
-      // Guarda el nuevo perfil de usuario
-      const newUserPerfil = new userPerfil(perfilData)
-      await newUserPerfil.save()
-      console.log('Perfil de usuario creado con éxito.')
-
       // Datos para la empresa
       const companyData = {
         name: doc.companyName,
         email: doc.email,
         password: doc.password,
         address: 'defaultRole',
+        phone_number: 5555555555,
         status: doc.status
       }
 
@@ -42,6 +27,23 @@ async function postSaveHook(doc) {
       const newCompany = new Company(companyData)
       await newCompany.save()
       console.log('Compañía creada con éxito.')
+
+      // Datos para el perfil del usuario
+       const perfilData = {
+         name: doc.fullname,
+         lastname: 'defaultLastname',
+         email: doc.email,
+         password: doc.password,
+         role: 'defaultRole',
+         type: 'defaultType',
+         photo: 'defaultPhoto',
+         company: newCompany._id // Asigna el ID de la compañía al perfil del usuario
+       }
+
+      // Guarda el nuevo perfil de usuario
+      const newUserPerfil = new userPerfil(perfilData)
+      await newUserPerfil.save()
+      console.log('Perfil de usuario creado con éxito.')
     } catch (error) {
       console.error('Error en el post-save hook:', error)
     }

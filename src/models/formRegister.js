@@ -30,10 +30,6 @@ const registerSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  fechaRegistro: {
-    type: Date,
-    default: Date.now
-  },
   activationCodeHash: {
     type: String
   },

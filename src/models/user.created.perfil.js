@@ -34,11 +34,15 @@ const userPerfilSchema = new mongoose.Schema({
     type: String,
     required: false
   },
-  resetPasswordToken: { 
-    type: String 
+  resetPasswordToken: {
+    type: String
   },
-  resetPasswordExpires: { 
-    type: Date 
+  resetPasswordExpires: {
+    type: Date
+  },
+  company: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Company' // Referencia al modelo de empresa
   }
 })
 

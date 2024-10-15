@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
   },
   phone_number: {
     type: Number,
-    required: true,
+    required: false,
     maxLength: 10,
     minLength: 10
   },
@@ -44,4 +44,4 @@ const schema = new mongoose.Schema({
   }
 })
 
-module.exports = mongoose.model('companies', schema)
+module.exports = mongoose.model('Company', schema)

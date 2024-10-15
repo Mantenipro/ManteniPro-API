@@ -7,7 +7,7 @@ const router = express.Router()
 
 //GET /users
 
-router.get('/', auth, async (request, response) => {
+router.get('/', async (request, response) => {
   try {
     const users = await usersUseCase.getAll()
 

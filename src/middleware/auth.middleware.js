@@ -15,6 +15,7 @@ async function auth(request, response, next) {
 
     const payload = jwt.verify(token)
 
+    
     const user = await userUseCase.getById(payload.id)
 
     if (!user) {

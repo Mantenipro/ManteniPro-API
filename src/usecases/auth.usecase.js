@@ -21,9 +21,11 @@ async function login(email, password) {
     throw createError(401, 'Contraseña incorrecta')
   }
 
+  // Imprimir el objeto user en la consola
+  console.log(user)
+
   // Generar el token JWT si el email y la contraseña son correctos
   const token = jwt.sign({ id: user._id })
-
   return token
 }
 
