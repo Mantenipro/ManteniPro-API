@@ -1,15 +1,26 @@
-const s3 = require('./config');
+const { S3Client } = require('@aws-sdk/client-s3');
+const { GetObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
 
 const generatePresignedUrl = async (fileName, fileType) => {
   const params = {
-    Bucket: process.env.AWS_BUCKET_NAME, 
+    Bucket: process.env.AWS_BUCKET_NAME,
     Key: fileName,
-    Expires: 60 * 5,
-    ContentType: fileType, 
+    ContentType: fileType,
   };
 
   try {
-    const url = await s3.getSignedUrlPromise('putObject', params); 
+    const command = new GetObjectCommand(params);
+    const url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); 
     return url;
   } catch (err) {
     console.error('Error generando URL firmada:', err);
@@ -20,3 +31,4 @@ const generatePresignedUrl = async (fileName, fileType) => {
 module.exports = {
   generatePresignedUrl,
 };
+

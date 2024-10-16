@@ -1,7 +1,8 @@
-/* eslint-disable no-undef */
-const Stripe = require('stripe')
-require('dotenv').config()
+const Stripe = require('stripe');
+require('dotenv').config();
 
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY)
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
-module.exports = stripe
+module.exports = stripe;
+
+
