@@ -19,7 +19,13 @@ const schema = new mongoose.Schema({
   },
   subscription_type: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'subscriptions'
+    ref: 'Subscription',
+    default: null
+  },
+  stripeCustomerId: {
+    type: String,
+    ref: 'User',
+    default: null // Referencia al modelo User
   },
   phone_number: {
     type: Number,

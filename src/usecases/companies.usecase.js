@@ -4,7 +4,7 @@ const createError = require('http-errors')
 
 async function getCompanyInfo(companyId) {
   try {
-    const company = await companies.findById(companyId)
+    const company = await companies.findById(companyId).populate('subscription_type')
     if (!company) {
       throw createError(404, 'Company not found')
     }

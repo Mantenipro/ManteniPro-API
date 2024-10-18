@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
         }
       ],
       mode: 'subscription', // O "payment" si es un pago único
-      success_url: 'http://localhost:8000/success', // URL de redirección en caso de éxito
+      success_url: 'http://localhost:3000/ticketsDashboard', // URL de redirección en caso de éxito
       cancel_url: 'http://localhost:3000/Suscription' // URL de redirección en caso de cancelación
     })
 

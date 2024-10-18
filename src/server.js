@@ -14,11 +14,18 @@ const assignmentRouter = require('./routes/assignment.router');
 const paymentRoutes = require('./routes/paymentRoutes')
 const companiesRouter = require('./routes/companies.router')
 const productsRouter = require('./routes/products.router')
+const webhookRouter = require('./routes/webhook.router')
+const cancelSubscriptionRouter = require('./routes/cancelSubscription.router')
+const reactivateSubscriptionRouter = require('./routes/reactivateSubscription.router')
 
 const app = express();
 
 
 app.use(cors());
+
+// Coloca la ruta del webhook ANTES de usar express.json()
+app.use('/webhook', webhookRouter)
+
 app.use(express.json());
 
 app.use('/users', usersRouter)
@@ -42,6 +49,11 @@ app.use('/payments', paymentRoutes)
 app.use('/products', productsRouter)
 
 app.use('/companies', companiesRouter)
+
+app.use('/cancel-subscription', cancelSubscriptionRouter)
+
+app.use('/reactivate-subscription', reactivateSubscriptionRouter)
+
 
 app.get('/', (request, response) => {
     response.json({
