@@ -43,6 +43,10 @@ const userPerfilSchema = new mongoose.Schema({
   company: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company' // Referencia al modelo de empresa
+  },
+  formRegister: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Register' // Referencia al modelo de empresa
   }
 })
 

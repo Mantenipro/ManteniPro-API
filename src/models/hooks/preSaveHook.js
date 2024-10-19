@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 const moment = require('moment')
+const jwt = require('jsonwebtoken')
 const { createTransporter } = require('../../utils/mailUtils')
 const {
   generateActivationCode,
@@ -10,7 +11,13 @@ async function preSaveHook(next) {
   if (this.isNew) {
     try {
       const activationCode = generateActivationCode()
-      const activationLink = `http://localhost:3000/activate?id=${this._id}`
+
+      // Generar el token JWT
+      const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+        expiresIn: '7d'
+      })
+
+      const activationLink = `http://localhost:3000/activate?token=${token}`
       const transporter = await createTransporter()
       const mailOptions = {
         from: process.env.GMAIL_USER,

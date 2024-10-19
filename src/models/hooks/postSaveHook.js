@@ -1,8 +1,6 @@
 /* eslint-disable no-undef */
 const userPerfil = require('../user.created.perfil')
 const Company = require('../companies.model')
-/* const Suscription = require('../subscription.model')
-const User = require('../user.model') */
 
 async function postSaveHook(doc) {
   process.nextTick(async () => {
@@ -41,7 +39,8 @@ async function postSaveHook(doc) {
         role: 'defaultRole',
         type: 'defaultType',
         photo: 'defaultPhoto',
-        company: newCompany._id
+        company: newCompany._id,
+        formRegister: doc._id
       }
 
       // Guarda el nuevo perfil de usuario

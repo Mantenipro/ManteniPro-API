@@ -7,6 +7,7 @@ const router = express.Router()
 
 // POST /auth/login
 router.post('/login', async (request, response) => {
+
   try {
     const { email, password } = request.body
     const token = await authUseCase.login(email, password)
@@ -27,6 +28,9 @@ router.post('/login', async (request, response) => {
     } else if (error.message === 'Contraseña incorrecta') {
       statusCode = 401 // Unauthorized
       errorMessage = 'Contraseña incorrecta'
+    } else if (error.message === 'Cuenta no activada') {
+      statusCode = 403 // Forbidden
+      errorMessage = 'Cuenta no activada, por favor revisa tu correo electrónico y activa la cuenta'
     }
 
     response.status(statusCode).json({
