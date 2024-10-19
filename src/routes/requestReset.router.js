@@ -2,17 +2,8 @@
 const express = require('express')
 const router = express.Router()
 const Register = require('../models/user.created.perfil')
-const nodemailer = require('nodemailer')
 const crypto = require('crypto')
-
-// Configuración de nodemailer
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'mantenipro6@gmail.com',
-    pass: 'cwqnmwkddweqioxl'
-  }
-})
+const { createTransporter } = require('../utils/mailUtils')
 
 // Ruta para solicitar el restablecimiento de contraseña
 router.post('/', async (request, response) => {
@@ -33,13 +24,16 @@ router.post('/', async (request, response) => {
 
     // Enviar correo electrónico con el enlace de restablecimiento
     const resetLink = `http://localhost:3000/resetPassword/?q=${resetPasswordToken}`
-    await transporter.sendMail({
-      to: email,
-      from: 'no-reply@mantenipro.com',
+    const transporter = await createTransporter()
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: this.email,
       subject: 'Restablecimiento de contraseña',
       html: `<p>Has solicitado un restablecimiento de contraseña.</p>
              <p>Haz clic en este <a href="${resetLink}">enlace</a> para restablecer tu contraseña.</p>`
-    })
+    }
+
+    await transporter.sendMail(mailOptions)
 
     response
       .status(200)
