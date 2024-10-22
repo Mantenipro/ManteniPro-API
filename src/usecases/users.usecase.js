@@ -54,7 +54,7 @@ async function create(userData) {
 // Función para obtener un usuario por ID
 async function getById(userId) {
   try {
-    const userFound = await user.findById(userId).populate('company')
+    const userFound = await user.findById(userId)
 
     if (!userFound) {
       throw createError(404, 'User not found')
@@ -66,7 +66,34 @@ async function getById(userId) {
   }
 }
 
+async function createUsers(userData, creatorRole) {
+  try {
+    // Verificar si el correo ya está en uso
+    const userFound = await user.findOne({ email: userData.email })
+    if (userFound) {
+      throw createError(409, 'Email already in use')
+    }
+
+    // Restringir a administradores que no puedan crear otros administradores
+    if (creatorRole === 'admin' && userData.role === 'admin') {
+      throw createError(
+        403,
+        'Administrators cannot create other administrators'
+      )
+    }
+
+    // Encriptar la contraseña
+    userData.password = await encrypt.encrypt(userData.password)
+
+    const newUser = await user.create(userData)
+    return newUser
+  } catch (error) {
+    throw createError(500, error.message)
+  }
+}
+
 module.exports = {
   create,
-  getById
+  getById,
+  createUsers
 }

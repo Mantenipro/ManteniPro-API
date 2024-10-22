@@ -36,7 +36,7 @@ async function postSaveHook(doc) {
         lastname: 'defaultLastname',
         email: doc.email,
         password: doc.password,
-        role: 'defaultRole',
+        role: 'admin',
         type: 'defaultType',
         photo: 'defaultPhoto',
         company: newCompany._id,

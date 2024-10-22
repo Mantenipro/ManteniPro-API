@@ -24,7 +24,8 @@ const userPerfilSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    required: true
+    enum: ['admin', 'tecnico', 'usuario'],
+    default: 'usuario' // Por defecto es "usuario"
   },
   type: {
     type: String,

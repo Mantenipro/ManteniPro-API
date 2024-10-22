@@ -23,8 +23,8 @@ async function preSaveHook(next) {
         from: process.env.GMAIL_USER,
         to: this.email,
         subject: 'Activación de tu cuenta',
-        text: `<p> Gracias por registrarte. Tu código de activación es: ${activationCode}</p>. 
-               <p> Por favor, haz clic en el siguiente enlace para activar tu cuenta: <a href="${activationLink}">Activar Cuenta </a> </p>`
+        html: `<p>Gracias por registrarte. Tu código de activación es: ${activationCode}.</p> 
+               <p>Por favor, haz clic en el siguiente enlace para activar tu cuenta: <a href="${activationLink}">Activar Cuenta. </a></p>`
       }
 
       await transporter.sendMail(mailOptions)
