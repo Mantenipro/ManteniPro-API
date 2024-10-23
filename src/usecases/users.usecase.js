@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
+const createError = require('http-errors') // Manejo de errores
 const user = require('../models/user.created.perfil') // Modelo de usuario
 const Company = require('../models/companies.model') // Modelo de empresa
 const encrypt = require('../lib/encrypt') // Librería para encriptar
-const createError = require('http-errors') // Manejo de errores
 
 // Función para crear un nuevo usuario
 async function create(userData) {
@@ -66,7 +66,8 @@ async function getById(userId) {
   }
 }
 
-async function createUsers(userData, creatorRole) {
+// Función para crear usuarios
+async function createUsers(userData, creatorId) {
   try {
     // Verificar si el correo ya está en uso
     const userFound = await user.findOne({ email: userData.email })
@@ -74,21 +75,34 @@ async function createUsers(userData, creatorRole) {
       throw createError(409, 'Email already in use')
     }
 
-    // Restringir a administradores que no puedan crear otros administradores
-    if (creatorRole === 'admin' && userData.role === 'admin') {
-      throw createError(
-        403,
-        'Administrators cannot create other administrators'
-      )
+    // Obtener el creador (administrador)
+    const creator = await user.findById(creatorId)
+    if (!creator || creator.role !== 'admin') {
+      throw createError(403, 'Access denied')
+    }
+
+    // Obtener la compañía del administrador
+    const company = await Company.findById(creator.company)
+    if (!company) {
+      throw createError(404, 'Company not found')
     }
 
     // Encriptar la contraseña
-    userData.password = await encrypt.encrypt(userData.password)
+    const hashedPassword = await encrypt.encrypt(userData.password)
 
-    const newUser = await user.create(userData)
+    // Crear el nuevo usuario
+    const newUser = new user({
+      ...userData,
+      password: hashedPassword, // Usar la contraseña encriptada
+      company: company._id // Asociar el usuario a la compañía del administrador
+    })
+
+    // Guardar el nuevo usuario en la base de datos
+    await newUser.save()
+
     return newUser
   } catch (error) {
-    throw createError(500, error.message)
+    throw createError(500, error.message);
   }
 }
 

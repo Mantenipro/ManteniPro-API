@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+const createError = require('http-errors') // Manejo de errores
 const express = require('express')
 const usersUseCase = require('../usecases/users.usecase')
 const auth = require('../middleware/auth.middleware')
@@ -23,27 +24,6 @@ router.get('/', auth, async (request, response) => {
   }
 })
 
-// POST /users
-router.post('/', auth, async (request, response) => {
-  try {
-    const creatorRole = request.user.role // Obtenemos el rol del creador desde el token
-
-    // Crear el usuario con validación de roles
-    const userCreated = await usersUseCase.create(request.body, creatorRole)
-
-    response.json({
-      success: true,
-      data: { user: userCreated }
-    })
-  } catch (error) {
-    response.status(error.status || 500).json({
-      success: false,
-      error: error.message
-    })
-  }
-})
-
-
 // GET /users/:id/profile
 router.get('/profile', auth, async (request, response) => {
   try {
@@ -66,24 +46,28 @@ router.get('/profile', auth, async (request, response) => {
   }
 })
 
-// GET /users/:id
-router.get('/:id', auth, async (request, response) => {
+// POST /users
+router.post('/', auth, async (request, response) => {
   try {
-    const user = await usersUseCase.getById(request.params.id)
+    // Verificar que el usuario logueado es un administrador
+    console.log('request.user:', request.user)
+    if (request.user.role !== 'admin') {
+      throw createError(403, 'Access denied');
+    }
 
-    response.json({
+    // Crear el nuevo usuario
+    const newUser = await usersUseCase.createUsers(request.body, request.user.id);
+
+    response.status(201).json({
       success: true,
-      data: { user }
-    })
+      data: newUser
+    });
   } catch (error) {
-    response.status(error.status || 500)
-    response.json({
+    response.status(error.status || 500).json({
       success: false,
       error: error.message
-    })
+    });
   }
-})
-
-
+});
 
 module.exports = router

@@ -25,31 +25,36 @@ async function login(email, password) {
     throw createError(401, 'Contraseña incorrecta')
   }
 
-  // Verificar si la cuenta está activa (buscar el mismo usuario pero con populate para obtener los datos relacionados)
-  const userWithForm = await users.findOne({ email }).populate('formRegister')
+  // Si el rol es "admin", verificar la activación de la cuenta
+  if (user.role === 'admin') {
+    // Verificar si la cuenta está activa (buscar el mismo usuario pero con populate para obtener los datos relacionados)
+    const userWithForm = await users.findOne({ email }).populate('formRegister')
 
-  // Añadimos un console.log para verificar si el populate trae los datos esperados
-  console.log('Resultado del populate:', JSON.stringify(userWithForm, null, 2))
-
-  // Validación mejorada para evitar posibles problemas
-  if (!userWithForm.formRegister) {
+    // Añadimos un console.log para verificar si el populate trae los datos esperados
     console.log(
-      'No se encontró información de activación en formRegister asociado al usuario.'
+      'Resultado del populate:',
+      JSON.stringify(userWithForm, null, 2)
     )
-    throw createError(403, 'No se encontró información de activación.')
-  }
 
-  if (!userWithForm.formRegister.isActive) {
-    console.log(
-      'Estado de activación de la cuenta:',
-      userWithForm.formRegister.isActive
-    )
-    throw createError(403, 'Cuenta no activada')
-  }
+    // Validación mejorada para evitar posibles problemas
+    if (!userWithForm.formRegister) {
+      console.log(
+        'No se encontró información de activación en formRegister asociado al usuario.'
+      )
+      throw createError(403, 'No se encontró información de activación.')
+    }
 
-  // Imprimir el objeto user en la consola
-  console.log('Usuario encontrado y cuenta activada:', userWithForm)
-  // Generar el token JWT si el email y la contraseña son correctos
+    if (!userWithForm.formRegister.isActive) {
+      console.log(
+        'Estado de activación de la cuenta:',
+        userWithForm.formRegister.isActive
+      )
+      throw createError(403, 'Cuenta no activada')
+    }
+
+    // Imprimir el objeto user en la consola
+    console.log('Usuario encontrado y cuenta activada:', userWithForm)
+  }
   const token = jwt.sign({ id: user._id })
   return token
 }
