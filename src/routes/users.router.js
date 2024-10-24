@@ -32,11 +32,11 @@ router.get('/profile', auth, async (request, response) => {
 
     // Obtener la información del usuario desde la base de datos usando el id del token
     const user = await usersUseCase.getById(userId)
-    const { name, role } = user
+    const { name, role, email, password, photo, company } = user
 
     response.json({
       success: true,
-      data: { name, role }
+      data: { name, role, email, password, photo, company }
     })
   } catch (error) {
     response.status(error.status || 500).json({

@@ -54,10 +54,23 @@ async function create(userData) {
 // Función para obtener un usuario por ID
 async function getById(userId) {
   try {
+    // Busca al usuario sin poblar la compañía aún
     const userFound = await user.findById(userId)
 
     if (!userFound) {
       throw createError(404, 'User not found')
+    }
+
+    // Dependiendo del rol, pobla solo el nombre de la empresa o toda la información
+    if (userFound.role === 'admin') {
+      // Para los administradores, pobla toda la información de la compañía
+      await userFound.populate('company')
+    } else if (userFound.role === 'usuario' || userFound.role === 'tecnico') {
+      // Para usuarios y técnicos, solo pobla el campo 'name' de la empresa
+      await userFound.populate({
+        path: 'company',
+        select: 'name' // Solo selecciona el nombre
+      })
     }
 
     return userFound
