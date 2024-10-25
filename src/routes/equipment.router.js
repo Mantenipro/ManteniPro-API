@@ -1,43 +1,56 @@
 const express = require('express');
-const createError = require('http-errors');
-const equipmentUseCase = require('../usecases/equipment.usecase');
+const router = express.Router();  
+const authMiddleware = require('../middleware/auth.middleware');
+const equipmentUseCase = require('../usecases/equipment.usecase'); // Cambia la importación para usar el caso de uso
 
-const router = express.Router();
-
-router.post('/', async (req, res) => {
+// Ruta para crear nuevo equipo
+router.post('/', authMiddleware, async (req, res) => {
     try {
-        const { equipmentName, model, owner, manufactureDate, brand, location, unitType } = req.body; 
-
-        // Verifica que se proporcionen todos los campos requeridos
-        if (!equipmentName || !model || !owner || !manufactureDate || !brand || !location || !unitType) {
-            return res.status(400).json({
-                success: false,
-                error: 'Missing required fields',
-            });
+        // Verifica que el usuario esté autenticado
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ success: false, error: 'User not authenticated' });
         }
 
-        // Crea un nuevo equipo utilizando el caso de uso
-        const newEquipment = await equipmentUseCase.createEquipment(req.body);
+        // Extraer campos del cuerpo de la petición
+        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr } = req.body;
+        const userId = req.user.id;
 
-        // Responde con el nuevo equipo creado
-        res.status(201).json({
-            success: true,
-            data: newEquipment,
-        });
+        // Validación de campos requeridos
+        if (!equipmentName || !model || !manufactureDate || !brand || !location || !unitType) {
+            return res.status(400).json({ success: false, error: 'Missing required fields' });
+        }
+
+        // Llamada a la función de creación del equipo
+        const newEquipment = await equipmentUseCase.createEquipment(
+            equipmentName,
+            model,
+            manufactureDate,
+            brand,
+            location,
+            unitType,
+            image,
+            qr,
+            userId // Este es el owner
+        );
+
+        // Respuesta exitosa
+        return res.status(201).json({ success: true, data: newEquipment });
     } catch (error) {
-        console.error('Error creating equipment:', error);
-        // Maneja errores específicos que puedan ocurrir durante la creación
+        console.error('Error creating equipment:', error.message);
+        console.error('Error stack trace:', error.stack);
+
+        // Manejo de errores específicos
         if (error.status) {
-            return res.status(error.status).json({
-                success: false,
-                error: error.message,
-            });
+            return res.status(error.status).json({ success: false, error: error.message });
         }
-        res.status(500).json({
-            success: false,
-            error: 'Error creating equipment',
-        });
+        return res.status(500).json({ success: false, error: 'Error creating equipment' });
     }
 });
 
 module.exports = router;
+
+
+
+
+
+

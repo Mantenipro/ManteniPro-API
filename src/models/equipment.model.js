@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Define the schema for equipment
+// Define el esquema para equipos
 const equipmentSchema = new mongoose.Schema({
   equipmentName: {
     type: String,
@@ -14,8 +14,7 @@ const equipmentSchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user', // Reference to the 'user' model
-    required: true,
+    ref: 'User', // Se cambia 'user' a 'User' para que coincida con el nombre del modelo
   },
   manufactureDate: {
     type: Date,
@@ -37,12 +36,19 @@ const equipmentSchema = new mongoose.Schema({
     trim: true,
   },
   image: {
-    type: String, // URL or file name
+    type: String, // URL o nombre del archivo
     default: null,
+  },
+  qr: {
+    type: String, // Puede ser una URL o el código QR en formato base64
+    default: null,
+    trim: true, // Se incluye trim para eliminar espacios accidentales
   },
 });
 
-// Create and export the model
+// Crear y exportar el modelo
 const Equipment = mongoose.model('Equipment', equipmentSchema);
 
 module.exports = Equipment;
+
+
