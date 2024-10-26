@@ -47,32 +47,15 @@ router.post(
 
         break
       }
-      case 'customer.subscription.created': {
-        const subscription = event.data.object
-
-        try {
-          // Procesar el evento de creación de suscripción
-          await saveSubscription(subscription.customer, subscription)
-        } catch (error) {
-          console.error(
-            'Error processing customer.subscription.created:',
-            error
-          )
-        }
-
-        break
-      }
+      case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object
 
         try {
-          // Procesar el evento de actualización de suscripción
+          // Procesar el evento de creación o actualización de suscripción
           await saveSubscription(subscription.customer, subscription)
         } catch (error) {
-          console.error(
-            'Error processing customer.subscription.updated:',
-            error
-          )
+          console.error(`Error processing ${event.type}:`, error)
         }
 
         break
@@ -159,17 +142,30 @@ async function saveSubscription(customerId, subscriptionData) {
     // Extraer cancel_at_period_end
     const cancelAtPeriodEnd = subscriptionData.cancel_at_period_end
 
-    // Crear una nueva suscripción
-    console.log('Creating new subscription...')
-    const subscription = new Subscription({
-      userId: user._id,
-      stripeSubscriptionId: subscriptionData.id,
-      status: subscriptionData.plan.active,
-      currentPeriodStart: currentPeriodStart,
-      currentPeriodEnd: currentPeriodEnd,
-      cancelAtPeriodEnd: cancelAtPeriodEnd, // Agregar cancel_at_period_end
-      companyId: company._id // Referencia a la compañía
+    // Buscar una suscripción existente con el mismo stripeSubscriptionId
+    let subscription = await Subscription.findOne({
+      stripeSubscriptionId: subscriptionData.id
     })
+    if (subscription) {
+      // Actualizar la suscripción existente
+      subscription.status = subscriptionData.plan.active
+      subscription.currentPeriodStart = currentPeriodStart
+      subscription.currentPeriodEnd = currentPeriodEnd
+      subscription.cancelAtPeriodEnd = cancelAtPeriodEnd
+      console.log('Updating existing subscription...')
+    } else {
+      // Crear una nueva suscripción
+      console.log('Creating new subscription...')
+      subscription = new Subscription({
+        userId: user._id,
+        stripeSubscriptionId: subscriptionData.id,
+        status: subscriptionData.plan.active,
+        currentPeriodStart: currentPeriodStart,
+        currentPeriodEnd: currentPeriodEnd,
+        cancelAtPeriodEnd: cancelAtPeriodEnd, // Agregar cancel_at_period_end
+        companyId: company._id // Referencia a la compañía
+      })
+    }
 
     // Guardar la suscripción en la base de datos
     await subscription.save()
