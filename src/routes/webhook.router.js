@@ -62,6 +62,21 @@ router.post(
 
         break
       }
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object
+
+        try {
+          // Procesar el evento de actualización de suscripción
+          await saveSubscription(subscription.customer, subscription)
+        } catch (error) {
+          console.error(
+            'Error processing customer.subscription.updated:',
+            error
+          )
+        }
+
+        break
+      }
       default:
       // Otros tipos de eventos no manejados
     }
@@ -141,6 +156,9 @@ async function saveSubscription(customerId, subscriptionData) {
       subscriptionData.current_period_end * 1000
     )
 
+    // Extraer cancel_at_period_end
+    const cancelAtPeriodEnd = subscriptionData.cancel_at_period_end
+
     // Crear una nueva suscripción
     console.log('Creating new subscription...')
     const subscription = new Subscription({
@@ -149,6 +167,7 @@ async function saveSubscription(customerId, subscriptionData) {
       status: subscriptionData.plan.active,
       currentPeriodStart: currentPeriodStart,
       currentPeriodEnd: currentPeriodEnd,
+      cancelAtPeriodEnd: cancelAtPeriodEnd, // Agregar cancel_at_period_end
       companyId: company._id // Referencia a la compañía
     })
 
