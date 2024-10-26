@@ -47,15 +47,17 @@ router.post(
 
         break
       }
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
+      case 'customer.subscription.created': {
         const subscription = event.data.object
 
         try {
-          // Procesar el evento de creación o actualización de suscripción
+          // Procesar el evento de creación de suscripción
           await saveSubscription(subscription.customer, subscription)
         } catch (error) {
-          console.error(`Error processing ${event.type}:`, error)
+          console.error(
+            'Error processing customer.subscription.created:',
+            error
+          )
         }
 
         break
@@ -139,30 +141,16 @@ async function saveSubscription(customerId, subscriptionData) {
       subscriptionData.current_period_end * 1000
     )
 
-    // Extraer cancel_at_period_end
-    const cancelAtPeriodEnd = subscriptionData.cancel_at_period_end
-
-    // Buscar una suscripción existente con el mismo stripeSubscriptionId
-    let subscription = await Subscription.findOne({
-      stripeSubscriptionId: subscriptionData.id
+    // Crear una nueva suscripción
+    console.log('Creating new subscription...')
+    const subscription = new Subscription({
+      userId: user._id,
+      stripeSubscriptionId: subscriptionData.id,
+      status: subscriptionData.plan.active,
+      currentPeriodStart: currentPeriodStart,
+      currentPeriodEnd: currentPeriodEnd,
+      companyId: company._id // Referencia a la compañía
     })
-    if (subscription) {
-      // Actualizar la suscripción existente
-      subscription.cancelAtPeriodEnd = cancelAtPeriodEnd
-      console.log('Updating existing subscription...')
-    } else {
-      // Crear una nueva suscripción
-      console.log('Creating new subscription...')
-      subscription = new Subscription({
-        userId: user._id,
-        stripeSubscriptionId: subscriptionData.id,
-        status: subscriptionData.plan.active,
-        currentPeriodStart: currentPeriodStart,
-        currentPeriodEnd: currentPeriodEnd,
-        cancelAtPeriodEnd: cancelAtPeriodEnd, // Agregar cancel_at_period_end
-        companyId: company._id // Referencia a la compañía
-      })
-    }
 
     // Guardar la suscripción en la base de datos
     await subscription.save()
