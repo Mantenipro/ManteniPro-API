@@ -15,6 +15,10 @@ const subscriptionSchema = new mongoose.Schema({
   currentPeriodEnd: {
     type: Date
   },
+  cancelAtPeriodEnd: {
+    type: Boolean,
+    default: false // Valor por defecto
+  },
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'

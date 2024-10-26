@@ -55,6 +55,10 @@ router.post('/', async (req, res) => {
         return res.status(404).json({ error: 'Company not found' })
       }
 
+      // Actualizar los campos relacionados con la suscripción en el documento
+      subscriptionDoc.cancelAtPeriodEnd = subscription.cancel_at_period_end
+      await subscriptionDoc.save() // Guarda la suscripción con el valor actualizado
+      
       // Actualizar los campos relacionados con la suscripción
       company.isActive = false
 
