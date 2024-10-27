@@ -3,6 +3,13 @@ const createError = require('http-errors') // Manejo de errores
 const user = require('../models/user.created.perfil') // Modelo de usuario
 const Company = require('../models/companies.model') // Modelo de empresa
 const encrypt = require('../lib/encrypt') // Librería para encriptar
+const moment = require('moment')
+const jwt = require('jsonwebtoken')
+const { createTransporter } = require('../../utils/mailUtils')
+const {
+  generateActivationCode,
+  hashActivationCode
+} = require('../../utils/tokenUtils')
 
 // Función para crear un nuevo usuario
 async function create(userData) {
@@ -103,11 +110,33 @@ async function createUsers(userData, creatorId) {
     // Encriptar la contraseña
     const hashedPassword = await encrypt.encrypt(userData.password)
 
+    // Generar un código de activación
+    const activationCode = generateActivationCode()
+
+    // Generar el token JWT
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: '7d'
+    })
+
+    const activationLink = `http://localhost:3000/activate?token=${token}`
+    const transporter = await createTransporter()
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: userData.email,
+      subject: 'Activación de tu cuenta',
+      html: `<p>Tu código de activación es: ${activationCode} Tienes una hora para activarla.</p> 
+             <p>Por favor, haz clic en el siguiente enlace para activar tu cuenta: <a href="${activationLink}">Activar Cuenta. </a></p>`
+    }
+
+    await transporter.sendMail(mailOptions)
+
     // Crear el nuevo usuario
     const newUser = new user({
       ...userData,
       password: hashedPassword, // Usar la contraseña encriptada
-      company: company._id // Asociar el usuario a la compañía del administrador
+      company: company._id, // Asociar el usuario a la compañía del administrador
+      activationCodeHash: await hashActivationCode(activationCode),
+      activationCodeExpiration: moment().add(1, 'hours').toDate()
     })
 
     // Guardar el nuevo usuario en la base de datos

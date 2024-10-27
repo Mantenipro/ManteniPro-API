@@ -18,7 +18,8 @@ const productsRouter = require('./routes/products.router');
 const webhookRouter = require('./routes/webhook.router');
 const cancelSubscriptionRouter = require('./routes/cancelSubscription.router');
 const reactivateSubscriptionRouter = require('./routes/reactivateSubscription.router');
-const s3Router = require('./routes/s3'); 
+const s3Router = require('./routes/s3');
+const userActivateRouter = require('./routes/userActivate.router');
 
 const app = express();
 
@@ -45,6 +46,7 @@ app.use('/companies', companiesRouter);
 app.use('/cancel-subscription', cancelSubscriptionRouter);
 app.use('/reactivate-subscription', reactivateSubscriptionRouter);
 app.use('/api/s3', s3Router);
+app.use('/userActivate', userActivateRouter)
 
 app.get('/', (request, response) => {
     response.json({

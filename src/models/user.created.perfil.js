@@ -48,6 +48,21 @@ const userPerfilSchema = new mongoose.Schema({
   formRegister: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Register' // Referencia al modelo de empresa
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  accountStatus: { //Solo para los usuarios creados por el administrador
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'inactive'
+  },
+  activationCodeHash: {
+    type: String
+  },
+  activationCodeExpiration: {
+    type: Date
   }
 })
 
