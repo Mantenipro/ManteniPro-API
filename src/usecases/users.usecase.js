@@ -113,6 +113,18 @@ async function createUsers(userData, creatorId) {
     // Generar un código de activación
     const activationCode = generateActivationCode()
 
+    // Crear el nuevo usuario
+    const newUser = new user({
+      ...userData,
+      password: hashedPassword, // Usar la contraseña encriptada
+      company: company._id, // Asociar el usuario a la compañía del administrador
+      activationCodeHash: await hashActivationCode(activationCode),
+      activationCodeExpiration: moment().add(1, 'hours').toDate()
+    })
+
+    // Guardar el nuevo usuario en la base de datos
+    await newUser.save()
+
     // Generar el token JWT
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: '7d'
@@ -129,18 +141,6 @@ async function createUsers(userData, creatorId) {
     }
 
     await transporter.sendMail(mailOptions)
-
-    // Crear el nuevo usuario
-    const newUser = new user({
-      ...userData,
-      password: hashedPassword, // Usar la contraseña encriptada
-      company: company._id, // Asociar el usuario a la compañía del administrador
-      activationCodeHash: await hashActivationCode(activationCode),
-      activationCodeExpiration: moment().add(1, 'hours').toDate()
-    })
-
-    // Guardar el nuevo usuario en la base de datos
-    await newUser.save()
 
     return newUser
   } catch (error) {
