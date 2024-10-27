@@ -5,11 +5,11 @@ const Company = require('../models/companies.model') // Modelo de empresa
 const encrypt = require('../lib/encrypt') // Librería para encriptar
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
-const { createTransporter } = require('../../utils/mailUtils')
+const { createTransporter } = require('../utils/mailUtils')
 const {
   generateActivationCode,
   hashActivationCode
-} = require('../../utils/tokenUtils')
+} = require('../utils/tokenUtils')
 
 // Función para crear un nuevo usuario
 async function create(userData) {

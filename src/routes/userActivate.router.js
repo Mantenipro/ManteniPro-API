@@ -54,3 +54,5 @@ router.post('/', async (request, response) => {
         .json({ message: 'Error al activar la cuenta', error: err })
     }
 })
+
+module.exports = router
