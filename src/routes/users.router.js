@@ -9,7 +9,9 @@ const router = express.Router()
 // GET /users
 router.get('/', auth, async (request, response) => {
   try {
-    const users = await usersUseCase.getAll()
+    const companyId = request.user.company._id // Asegúrate de que el user tenga el companyId
+    console.log('Company ID:', companyId) // Agrega esto para verificar el companyId
+    const users = await usersUseCase.getUsersByCompany(companyId)
 
     response.json({
       success: true,

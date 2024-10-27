@@ -119,8 +119,20 @@ async function createUsers(userData, creatorId) {
   }
 }
 
+//Funcion para buscar los usuarios creados
+async function getUsersByCompany(companyId) {
+  try {
+    const users = await user.find({ company: companyId })
+    console.log('Users found:', users) // Agrega esto para verificar los usuarios encontrados
+    return users
+  } catch (error) {
+    throw createError(500, error.message)
+  }
+}
+
 module.exports = {
   create,
   getById,
-  createUsers
+  createUsers,
+  getUsersByCompany
 }
