@@ -130,7 +130,7 @@ async function createUsers(userData, creatorId) {
       expiresIn: '7d'
     })
 
-    const activationLink = `http://localhost:3000/activate?token=${token}`
+    const activationLink = `http://localhost:3000/userActivate?token=${token}`
     const transporter = await createTransporter()
     const mailOptions = {
       from: process.env.GMAIL_USER,
