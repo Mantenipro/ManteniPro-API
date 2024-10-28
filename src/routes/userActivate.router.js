@@ -47,11 +47,17 @@ router.post('/', async (request, response) => {
         user.activationCodeExpiration = undefined // Eliminamos la fecha de caducidad
         await user.save()
     
-        response.status(200).json({ message: 'Cuenta activada exitosamente.' })
+        response
+          .status(200)
+          .json({ success: true, message: 'Cuenta activada exitosamente.' })
     } catch (err) {
         response
-        .status(500)
-        .json({ message: 'Error al activar la cuenta', error: err })
+          .status(500)
+          .json({
+            success: false,
+            message: 'Error al activar la cuenta',
+            error: err
+          })
     }
 })
 
