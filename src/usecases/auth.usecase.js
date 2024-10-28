@@ -55,6 +55,19 @@ async function login(email, password) {
     // Imprimir el objeto user en la consola
     console.log('Usuario encontrado y cuenta activada:', userWithForm)
   }
+
+  // Si el rol es "user" o "tecnico", verificar la activación de la cuenta
+  if (user.role === 'usuario' || user.role === 'tecnico') {
+    // Verificar si la cuenta está activa
+    if (!user.accountStatus) {
+      console.log('Estado de activación de la cuenta:', user.accountStatus)
+      throw createError(403, 'Cuenta no activada')
+    }
+
+    // Imprimir el objeto user en la consola
+    console.log('Usuario encontrado y cuenta activada:', user)
+  }
+
   const token = jwt.sign({ id: user._id })
   return token
 }
