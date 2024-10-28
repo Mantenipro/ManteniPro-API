@@ -27,7 +27,7 @@ router.post('/', async (request, response) => {
     const transporter = await createTransporter()
     const mailOptions = {
       from: process.env.GMAIL_USER,
-      to: this.email,
+      to: email,
       subject: 'Restablecimiento de contraseña',
       html: `<p>Has solicitado un restablecimiento de contraseña.</p>
              <p>Haz clic en este <a href="${resetLink}">enlace</a> para restablecer tu contraseña.</p>`
@@ -35,16 +35,14 @@ router.post('/', async (request, response) => {
 
     await transporter.sendMail(mailOptions)
 
-    response
-      .status(200)
-      .json({
-        message: 'Se ha enviado un correo para restablecer la contraseña.'
-      })
-  } catch (err) {
-    response.status(500).json({
-      message: 'Error al enviar el token de restablecimiento',
-      error: err
+    response.status(200).json({
+      message: 'Se ha enviado un correo para restablecer la contraseña.'
     })
+  } catch (error) {
+    console.error('Error al enviar el token de restablecimiento:', error)
+    response
+      .status(500)
+      .json({ message: 'Error al enviar el token de restablecimiento', error })
   }
 })
 
