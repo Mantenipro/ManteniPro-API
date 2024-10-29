@@ -177,24 +177,24 @@ async function updateUser(userId, userData) {
   }
 
   try {
-    const userFound = await user.findById(userId);
+    const userFound = await user.findById(userId)
     if (!userFound) {
-      throw createError(404, 'User not found');
+      throw createError(404, 'User not found')
     }
 
     // Actualizar los datos del usuario
-    Object.assign(userFound, userData);
+    Object.assign(userFound, userData)
 
     // Guardar los cambios
-    const updatedUser = await userFound.save();
+    const updatedUser = await userFound.save()
 
-    return updatedUser;
+    return updatedUser
   } catch (error) {
-    // Manejar errores
+    console.error('Error en updateUser:', error) // Registrar el error completo
     if (error.status) {
-      throw error;
+      throw error
     }
-    throw createError(500, 'Error updating user');
+    throw createError(500, 'Error updating user')
   }
 }
 
