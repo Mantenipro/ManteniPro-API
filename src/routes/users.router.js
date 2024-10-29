@@ -91,6 +91,23 @@ router.post('/', auth, async (request, response) => {
 });
 
 // DELETE /users/:userId
+router.delete('/:userId', async (request, response) => {
+  const { userId } = request.params;
+
+  try {
+    const userDeleted = await usersUseCase.deleteUser(userId)
+
+    response.status(200).json({
+      success: true,
+      data: userDeleted
+    })
+  } catch (error) {
+    response.status(error.status || 500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+});
 
 //Get user by id para vista de administrador
 router.get('/:userId', async (req, res) => {

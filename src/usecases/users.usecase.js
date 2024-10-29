@@ -204,11 +204,34 @@ async function updateUser(userId, userData) {
   }
 }
 
+//Eliminar un usuario
+async function deleteUser(userId) {
+  if (!userId) {
+    throw createError(400, 'Invalid input')
+  }
+
+  try {
+    const userDeleted = await user.findByIdAndDelete(userId)
+    if (!userDeleted) {
+      throw createError(404, 'User not found')
+    }
+
+    return userDeleted
+  } catch (error) {
+    console.error('Error en deleteUser:', error) // Registrar el error completo
+    if (error.status) {
+      throw error
+    }
+    throw createError(500, 'Error deleting user')
+  }
+}
+
 module.exports = {
   create,
   getById,
   createUsers,
   getUsersByCompany,
   getAllUsers,
-  updateUser
+  updateUser,
+  deleteUser
 }
