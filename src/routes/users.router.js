@@ -111,7 +111,10 @@ router.put('/:userId', async (req, res) => {
 
   try {
     const updatedUser = await usersUseCase.updateUser(userId, userData);
-    res.status(200).json(updatedUser);
+    res.status(200).json({
+      sucess: true,
+      data: updatedUser
+    })
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message });
   }
