@@ -90,6 +90,20 @@ router.post('/', auth, async (request, response) => {
   }
 });
 
+// DELETE /users/:userId
+
+//Get user by id para vista de administrador
+router.get('/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await usersUseCase.getById(userId);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
+
 // Ruta para actualizar un usuario
 router.put('/:userId', async (req, res) => {
   const { userId } = req.params;
