@@ -1,7 +1,6 @@
 const Equipment = require('../models/equipment.model');
 const createError = require('http-errors');
 
-
 async function createEquipment(equipmentName, model, manufactureDate, brand, location, unitType, image, qr, userId, owner) {
   try {
     const equipmentFound = await Equipment.findOne({
@@ -41,6 +40,24 @@ async function createEquipment(equipmentName, model, manufactureDate, brand, loc
   }
 }
 
+async function getEquipmentByUserId(userId) {
+  try {
+    const userEquipment = await Equipment.find({ company: userId });
+
+    if (!userEquipment || userEquipment.length === 0) {
+      throw createError(404, 'No equipment found for this user');
+    }
+
+    return userEquipment;
+  } catch (error) {
+    console.error('Error details:', error); 
+    if (error.status) {
+      throw error;
+    } else {
+      throw createError(500, 'Error retrieving user equipment');
+    }
+  }
+}
 
 async function editEquipment(id, updatedData) {
   try {
@@ -61,7 +78,6 @@ async function editEquipment(id, updatedData) {
   }
 }
 
-
 async function deleteEquipment(id) {
   try {
     const deletedEquipment = await Equipment.findByIdAndDelete(id);
@@ -81,7 +97,6 @@ async function deleteEquipment(id) {
   }
 }
 
-
 async function getAllEquipment() {
   try {
     const equipmentList = await Equipment.find();
@@ -92,13 +107,12 @@ async function getAllEquipment() {
   }
 }
 
-
-async function getEquipmentById(id) {
+async function getEquipmentByCompanyId(companyId) {
   try {
-    const equipment = await Equipment.findById(id);
+    const equipment = await Equipment.find({ company: companyId });
 
-    if (!equipment) {
-      throw createError(404, 'Equipment not found');
+    if (!equipment || equipment.length === 0) {
+      throw createError(404, 'No equipment found for this company');
     }
 
     return equipment;
@@ -107,7 +121,7 @@ async function getEquipmentById(id) {
     if (error.status) {
       throw error;
     } else {
-      throw createError(500, 'Error retrieving equipment');
+      throw createError(500, 'Error retrieving equipment by company');
     }
   }
 }
@@ -117,8 +131,10 @@ module.exports = {
   editEquipment,
   deleteEquipment,
   getAllEquipment,
-  getEquipmentById
+  getEquipmentByCompanyId,
+  getEquipmentByUserId 
 };
+
 
 
 

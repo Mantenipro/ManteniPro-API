@@ -20,18 +20,15 @@ router.post('/s3/presigned-url', async (req, res) => {
     try {
         const { fileName, fileType } = req.body;
 
-        // Parámetros para generar la URL pre-firmada
         const params = {
-            Bucket: process.env.S3_BUCKET_NAME, // Nombre del bucket en S3
-            Key: fileName,                      // Nombre del archivo en S3
-            ContentType: fileType,              // Tipo de contenido (MIME type) del archivo
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: fileName,
+            ContentType: fileType,
         };
 
-        // Genera la URL pre-firmada
         const command = new PutObjectCommand(params);
-        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 }); // URL válida por 60 segundos
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
 
-        // Enviar la URL pre-firmada al frontend
         res.json({ url: signedUrl });
     } catch (error) {
         console.error('Error generando la URL pre-firmada:', error);
@@ -49,10 +46,9 @@ router.post('/', authMiddleware, async (req, res) => {
             return res.status(401).json({ success: false, error: 'User not authenticated' });
         }
 
-        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr, owner } = req.body; 
+        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr, owner } = req.body;
         const userId = req.user.id;
 
-        // Validación de campos requeridos
         if (!equipmentName || !model || !manufactureDate || !brand || !location || !unitType || !owner) {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
@@ -64,7 +60,7 @@ router.post('/', authMiddleware, async (req, res) => {
             brand,
             location,
             unitType,
-            image,  // Se almacena la URL de S3 aquí
+            image,
             qr,
             userId,
             owner
@@ -79,6 +75,28 @@ router.post('/', authMiddleware, async (req, res) => {
             return res.status(error.status).json({ success: false, error: error.message });
         }
         return res.status(500).json({ success: false, error: 'Error creating equipment' });
+    }
+});
+
+// Endpoint para obtener equipos creados por el usuario autenticado
+router.get('/user', authMiddleware, async (req, res) => {
+    try {
+        if (!req.user || !req.user.id) {
+            return res.status(401).json({ success: false, error: 'User not authenticated' });
+        }
+
+        const userId = req.user.id;
+        const userEquipment = await equipmentUseCase.getEquipmentByUserId(userId);
+
+        return res.status(200).json({ success: true, data: userEquipment });
+    } catch (error) {
+        console.error('Error retrieving user equipment:', error.message);
+        console.error('Error stack trace:', error.stack);
+
+        if (error.status) {
+            return res.status(error.status).json({ success: false, error: error.message });
+        }
+        return res.status(500).json({ success: false, error: 'Error retrieving user equipment' });
     }
 });
 
@@ -135,26 +153,27 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-// Endpoint para obtener equipo por ID
-router.get('/:id', authMiddleware, async (req, res) => {
+// Endpoint para obtener equipos por ID de compañía
+router.get('/company/:companyId', authMiddleware, async (req, res) => {
     try {
-        const equipmentId = req.params.id;
+        const companyId = req.params.companyId;
 
-        const equipment = await equipmentUseCase.getEquipmentById(equipmentId);
+        const equipment = await equipmentUseCase.getEquipmentByCompanyId(companyId);
         
         return res.status(200).json({ success: true, data: equipment });
     } catch (error) {
-        console.error('Error retrieving equipment:', error.message);
+        console.error('Error retrieving equipment by company:', error.message);
         console.error('Error stack trace:', error.stack);
 
         if (error.status) {
             return res.status(error.status).json({ success: false, error: error.message });
         }
-        return res.status(500).json({ success: false, error: 'Error retrieving equipment' });
+        return res.status(500).json({ success: false, error: 'Error retrieving equipment by company' });
     }
 });
 
 module.exports = router;
+
 
 
 
