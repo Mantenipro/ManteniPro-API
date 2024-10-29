@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 const express = require('express');
-const createError = require('http-errors');
-const reportUseCase = require('../usecases/report.usecase');
 const Report = require('../models/report.model');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');

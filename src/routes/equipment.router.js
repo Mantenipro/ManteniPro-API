@@ -1,19 +1,59 @@
 const express = require('express');
-const router = express.Router();  
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const authMiddleware = require('../middleware/auth.middleware');
-const equipmentUseCase = require('../usecases/equipment.usecase'); 
+const equipmentUseCase = require('../usecases/equipment.usecase');
 
+const router = express.Router();
 
+// Configuración de AWS S3
+const s3 = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+});
+
+// Endpoint para generar una URL pre-firmada para subir una imagen a S3
+router.post('/s3/presigned-url', async (req, res) => {
+    try {
+        const { fileName, fileType } = req.body;
+
+        // Parámetros para generar la URL pre-firmada
+        const params = {
+            Bucket: process.env.S3_BUCKET_NAME, // Nombre del bucket en S3
+            Key: fileName,                      // Nombre del archivo en S3
+            ContentType: fileType,              // Tipo de contenido (MIME type) del archivo
+        };
+
+        // Genera la URL pre-firmada
+        const command = new PutObjectCommand(params);
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 }); // URL válida por 60 segundos
+
+        // Enviar la URL pre-firmada al frontend
+        res.json({ url: signedUrl });
+    } catch (error) {
+        console.error('Error generando la URL pre-firmada:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error generating presigned URL',
+        });
+    }
+});
+
+// Endpoint para crear un nuevo equipo
 router.post('/', authMiddleware, async (req, res) => {
     try {
         if (!req.user || !req.user.id) {
             return res.status(401).json({ success: false, error: 'User not authenticated' });
         }
 
-        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr, owner } = req.body; // Added owner
+        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr, owner } = req.body; 
         const userId = req.user.id;
 
-        if (!equipmentName || !model || !manufactureDate || !brand || !location || !unitType || !owner) { // Added check for owner
+        // Validación de campos requeridos
+        if (!equipmentName || !model || !manufactureDate || !brand || !location || !unitType || !owner) {
             return res.status(400).json({ success: false, error: 'Missing required fields' });
         }
 
@@ -24,10 +64,10 @@ router.post('/', authMiddleware, async (req, res) => {
             brand,
             location,
             unitType,
-            image,
+            image,  // Se almacena la URL de S3 aquí
             qr,
             userId,
-            owner 
+            owner
         );
 
         return res.status(201).json({ success: true, data: newEquipment });
@@ -42,7 +82,7 @@ router.post('/', authMiddleware, async (req, res) => {
     }
 });
 
-
+// Endpoint para actualizar equipo por ID
 router.put('/:id', authMiddleware, async (req, res) => {
     try {
         const equipmentId = req.params.id;
@@ -62,7 +102,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
     }
 });
 
-
+// Endpoint para eliminar equipo por ID
 router.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const equipmentId = req.params.id;
@@ -81,7 +121,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
-
+// Endpoint para obtener todos los equipos
 router.get('/', authMiddleware, async (req, res) => {
     try {
         const equipmentList = await equipmentUseCase.getAllEquipment();
@@ -95,7 +135,7 @@ router.get('/', authMiddleware, async (req, res) => {
     }
 });
 
-
+// Endpoint para obtener equipo por ID
 router.get('/:id', authMiddleware, async (req, res) => {
     try {
         const equipmentId = req.params.id;
@@ -115,6 +155,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
