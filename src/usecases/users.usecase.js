@@ -170,10 +170,39 @@ async function getAllUsers() {
   }
 }
 
+// Función para modificar un usuario
+async function updateUser(userId, userData) {
+  if (!userId || !userData) {
+    throw createError(400, 'Invalid input');
+  }
+
+  try {
+    const userFound = await user.findById(userId);
+    if (!userFound) {
+      throw createError(404, 'User not found');
+    }
+
+    // Actualizar los datos del usuario
+    Object.assign(userFound, userData);
+
+    // Guardar los cambios
+    const updatedUser = await userFound.save();
+
+    return updatedUser;
+  } catch (error) {
+    // Manejar errores
+    if (error.status) {
+      throw error;
+    }
+    throw createError(500, 'Error updating user');
+  }
+}
+
 module.exports = {
   create,
   getById,
   createUsers,
   getUsersByCompany,
-  getAllUsers 
+  getAllUsers,
+  updateUser
 }

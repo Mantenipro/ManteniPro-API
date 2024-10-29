@@ -21,6 +21,7 @@ const reactivateSubscriptionRouter = require('./routes/reactivateSubscription.ro
 const s3Router = require('./routes/s3');
 const userActivateRouter = require('./routes/userActivate.router');
 const resendCodeRouter = require('./routes/resendCode.router');
+const updatedUserRouter = require('./routes/users.router');
 
 const app = express();
 
@@ -49,6 +50,8 @@ app.use('/reactivate-subscription', reactivateSubscriptionRouter);
 app.use('/api/s3', s3Router);
 app.use('/userActivate', userActivateRouter)
 app.use('/resend-activation-code', resendCodeRouter)
+app.use('/updatedUser', updatedUserRouter)
+app.use('/updatedUser', usersRouter); // Asegúrate de que esta ruta esté correctamente configurada
 
 app.get('/', (request, response) => {
     response.json({

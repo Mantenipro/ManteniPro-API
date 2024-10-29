@@ -90,4 +90,18 @@ router.post('/', auth, async (request, response) => {
   }
 });
 
+// Ruta para actualizar un usuario
+router.put('/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const userData = req.body;
+
+  try {
+    const updatedUser = await usersUseCase.updateUser(userId, userData);
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;
