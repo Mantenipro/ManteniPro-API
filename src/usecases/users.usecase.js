@@ -159,9 +159,21 @@ async function getUsersByCompany(companyId) {
   }
 }
 
+// Función para obtener todos los usuarios
+async function getAllUsers() {
+  try {
+    const users = await user.find(); // Busca todos los usuarios en la base de datos
+    console.log('All users found:', users); // Mensaje de consola para depuración
+    return users; // Retorna la lista de usuarios
+  } catch (error) {
+    throw createError(500, error.message); // Manejo de errores
+  }
+}
+
 module.exports = {
   create,
   getById,
   createUsers,
-  getUsersByCompany
+  getUsersByCompany,
+  getAllUsers 
 }
