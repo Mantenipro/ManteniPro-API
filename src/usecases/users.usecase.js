@@ -177,24 +177,30 @@ async function updateUser(userId, userData) {
   }
 
   try {
-    const userFound = await user.findById(userId)
+    const userFound = await user.findById(userId);
     if (!userFound) {
-      throw createError(404, 'User not found')
+      throw createError(404, 'User not found');
     }
+
+    // Filtrar los datos permitidos
+    const allowedUpdates = ['name', 'role', 'type'];
+    const updates = Object.keys(userData).filter(key => allowedUpdates.includes(key));
 
     // Actualizar los datos del usuario
-    Object.assign(userFound, userData)
+    updates.forEach(key => {
+      userFound[key] = userData[key];
+    });
 
     // Guardar los cambios
-    const updatedUser = await userFound.save()
+    const updatedUser = await userFound.save();
 
-    return updatedUser
+    return updatedUser;
   } catch (error) {
-    console.error('Error en updateUser:', error) // Registrar el error completo
+    console.error('Error en updateUser:', error); // Registrar el error completo
     if (error.status) {
-      throw error
+      throw error;
     }
-    throw createError(500, 'Error updating user')
+    throw createError(500, 'Error updating user');
   }
 }
 
