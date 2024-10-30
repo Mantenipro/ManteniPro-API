@@ -48,6 +48,10 @@ const equipmentSchema = new mongoose.Schema({
     default: null,
     trim: true, 
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Equipment = mongoose.model('Equipment', equipmentSchema);

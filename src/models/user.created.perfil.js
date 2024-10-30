@@ -53,10 +53,10 @@ const userPerfilSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-  accountStatus: { //Solo para los usuarios creados por el administrador
-    type: String,
-    enum: ['true', 'false'],
-    default: 'false'
+  accountStatus: {
+    //Solo para los usuarios creados por el administrador
+    type: Boolean,
+    default: false
   },
   activationCodeHash: {
     type: String

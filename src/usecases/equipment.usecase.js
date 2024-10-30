@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const Equipment = require('../models/equipment.model');
 const createError = require('http-errors');
 
