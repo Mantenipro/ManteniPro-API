@@ -14,11 +14,11 @@ const equipmentSchema = new mongoose.Schema({
   },
   company: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: 'User',
   },
-  owner: { 
-    type: String, 
-    required: true, 
+  owner: {
+    type: String,
+    required: true,
   },
   manufactureDate: {
     type: Date,
@@ -40,14 +40,16 @@ const equipmentSchema = new mongoose.Schema({
     trim: true,
   },
   image: {
-    type: String, 
+    type: String,
     default: null,
   },
   qr: {
     type: String,
     default: null,
-    trim: true, 
+    trim: true,
   },
+}, {
+  timestamps: true // Esto agregará createdAt y updatedAt automáticamente
 });
 
 const Equipment = mongoose.model('Equipment', equipmentSchema);
