@@ -1,37 +1,48 @@
 /* eslint-disable no-undef */
-const Equipment = require('../models/equipment.model');
-const createError = require('http-errors');
-const Company = require('../models/companies.model');
-const user = require('../models/user.created.perfil');
+const Equipment = require('../models/equipment.model')
+const createError = require('http-errors')
 
-async function createEquipment(userData, creatorId) {
+async function createEquipment(
+  equipmentName,
+  model,
+  manufactureDate,
+  brand,
+  location,
+  unitType,
+  image,
+  qr,
+  userId,
+  owner
+) {
   try {
     const equipmentFound = await Equipment.findOne({
-      equipmentName: userData.equipmentName,
-      model: userData.model
-    }) 
+      equipmentName: equipmentName,
+      model: model
+    })
+
     if (equipmentFound) {
       throw createError(
         409,
         'Equipment with the same name and model already exists'
       )
     }
-    const creator = await user.findById(creatorId)
-    if(!creator){
-      throw createError(404, 'User not found')
+
+    if (!image) {
+      console.warn('Image field is missing or invalid')
     }
 
-    const company = await Company.findById(creator.company)
-    if(!company){
-      throw createError(404, 'Company not found')
-    }
-
-    const newEquipment = new Equipment({
-      ...userData,
-      company: company._id
-     })
-
-     await newEquipment.save()
+    const newEquipment = await Equipment.create({
+      equipmentName,
+      model,
+      company: userId,
+      owner,
+      manufactureDate,
+      brand,
+      location,
+      unitType,
+      image,
+      qr
+    })
 
     return newEquipment
   } catch (error) {
@@ -46,53 +57,55 @@ async function createEquipment(userData, creatorId) {
 
 async function getEquipmentByUserId(userId) {
   try {
-    const userEquipment = await Equipment.find({ company: userId });
+    const userEquipment = await Equipment.find({ company: userId })
 
     if (!userEquipment || userEquipment.length === 0) {
-      throw createError(404, 'No equipment found for this user');
+      throw createError(404, 'No equipment found for this user')
     }
 
-    return userEquipment;
+    return userEquipment
   } catch (error) {
-    console.error('Error details:', error); 
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error retrieving user equipment');
+      throw createError(500, 'Error retrieving user equipment')
     }
   }
 }
 
 async function editEquipment(id, updatedData) {
   try {
-    const updatedEquipment = await Equipment.findByIdAndUpdate(id, updatedData, { new: true });
+    const updatedEquipment = await Equipment.findByIdAndUpdate(
+      id,
+      updatedData,
+      { new: true }
+    )
 
     if (!updatedEquipment) {
-      throw createError(404, 'Equipment not found');
+      throw createError(404, 'Equipment not found')
     }
 
-    return updatedEquipment;
+    return updatedEquipment
   } catch (error) {
-    console.error('Error details:', error); 
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error updating equipment');
+      throw createError(500, 'Error updating equipment')
     }
   }
 }
 
-async function deleteEquipment(userId) {
-  if (!userId) {
-    throw createError(400, 'Invalid input')
-  }
+async function deleteEquipment(id) {
   try {
-    const equipmentDeleted = await Equipment.findByIdAndDelete(userId)
-    if (!equipmentDeleted) {
+    const deletedEquipment = await Equipment.findByIdAndDelete(id)
+
+    if (!deletedEquipment) {
       throw createError(404, 'Equipment not found')
     }
 
-    return equipmentDeleted
+    return deletedEquipment
   } catch (error) {
     console.error('Error details:', error)
     if (error.status) {
@@ -105,99 +118,48 @@ async function deleteEquipment(userId) {
 
 async function getAllEquipment() {
   try {
-    const equipmentList = await Equipment.find();
-    return equipmentList;
+    const equipmentList = await Equipment.find()
+    return equipmentList
   } catch (error) {
-    console.error('Error details:', error); 
-    throw createError(500, 'Error retrieving equipment list');
+    console.error('Error details:', error)
+    throw createError(500, 'Error retrieving equipment list')
   }
 }
 
-async function getEquipmentByCompany(companyId) {
+async function getEquipmentByCompanyId(companyId) {
   try {
-    const equipment = await Equipment.find({ company: companyId });
+    const equipment = await Equipment.find({ company: companyId })
 
     if (!equipment || equipment.length === 0) {
-      throw createError(404, 'No equipment found for this company');
+      throw createError(404, 'No equipment found for this company')
     }
-    console.log(equipment)
 
-    return equipment;
+    return equipment
   } catch (error) {
-    console.error('Error details:', error); 
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error retrieving equipment by company');
+      throw createError(500, 'Error retrieving equipment by company')
     }
   }
 }
-
-async function updateEquiment(equipmentId, equipmentData) {
-  if (!equipmentId || !equipmentData) {
-    console.error('Invalid input:', { equipmentId, equipmentData }) // Agregar para depuración
-    throw createError(400, 'Invalid input')
-  }
-
-  try {
-    const equipmentFound = await Equipment.findById(equipmentId);
-    if (!equipmentFound) {
-      throw createError(404, 'Equipment not found');
-    }
-
-    const allowedUpdates = ['equipmentName', 'model', 'manufactureDate', 'brand', 'location', 'unitType', 'image', 'qr'];
-    const updates = Object.keys(equipmentData).filter(key => allowedUpdates.includes(key));
-
-    updates.forEach(key => {
-      equipmentFound[key] = equipmentData[key];
-    });
-
-    const updatedEquipment = await equipmentFound.save();
-
-    return updatedEquipment;
-  } catch (error) {
-    console.error('Error updating equipment:', error);
-    if (error.status) {
-      throw error;
-    }
-    throw createError(500, 'Error updating equipment');
-  }
-}
-
-async function getById(equipmentId) {
-  try {
-    
-    const equipmentFound = await Equipment.findById(equipmentId);
-
-    if (!equipmentFound) {
-      throw createError(404, 'Equipment not found');
-    }
-
-    await equipmentFound.populate({
-      path: 'company',
-      select: 'name' // Solo selecciona el nombre
-    })
-    return equipmentFound
-  } catch (error) {
-    throw createError(500, error.message);
-  }
- }
 
 async function getEquipmentById(equipmentId) {
   try {
-    const equipment = await Equipment.findById(equipmentId);
+    const equipment = await Equipment.findById(equipmentId)
 
     if (!equipment) {
-      throw createError(404, 'Equipment not found');
+      throw createError(404, 'Equipment not found')
     }
 
-    return equipment;
+    return equipment
   } catch (error) {
-    console.error('Error details:', error);
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error retrieving equipment by ID');
+      throw createError(500, 'Error retrieving equipment by ID')
     }
   }
 }
@@ -208,11 +170,5 @@ module.exports = {
   getAllEquipment,
   getEquipmentByCompanyId,
   getEquipmentByUserId,
-  getEquipmentById, 
-};
-
-
-
-
-
-
+  getEquipmentById
+}
