@@ -43,31 +43,13 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo equipo
 router.post('/', authMiddleware, async (req, res) => {
     try {
-        if (!req.user || !req.user.id) {
-            return res.status(401).json({ success: false, error: 'User not authenticated' });
-        }
 
-        const { equipmentName, model, manufactureDate, brand, location, unitType, image, qr, owner } = req.body;
-        const userId = req.user.id;
-
-        if (!equipmentName || !model || !manufactureDate || !brand || !location || !unitType || !owner) {
-            return res.status(400).json({ success: false, error: 'Missing required fields' });
-        }
-
-        const newEquipment = await equipmentUseCase.createEquipment(
-            equipmentName,
-            model,
-            manufactureDate,
-            brand,
-            location,
-            unitType,
-            image,
-            qr,
-            userId,
-            owner
-        );
-
-        return res.status(201).json({ success: true, data: newEquipment });
+        const newEquipment = await equipmentUseCase.createEquipment(req.body, req.user.id);
+        
+        return res.status(201).json({ 
+            success: true, 
+            data: newEquipment 
+        });
     } catch (error) {
         console.error('Error creating equipment:', error.message);
         console.error('Error stack trace:', error.stack);
@@ -80,14 +62,12 @@ router.post('/', authMiddleware, async (req, res) => {
 });
 
 // Endpoint para obtener equipos creados por el usuario autenticado
-router.get('/user', authMiddleware, async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
-        if (!req.user || !req.user.id) {
-            return res.status(401).json({ success: false, error: 'User not authenticated' });
-        }
-
-        const userId = req.user.id;
-        const userEquipment = await equipmentUseCase.getEquipmentByUserId(userId);
+        const companyId = req.user.company;
+        console.log('Company ID:', companyId)
+        const userEquipment =
+          await equipmentUseCase.getEquipmentByCompany(companyId)
 
         return res.status(200).json({ success: true, data: userEquipment });
     } catch (error) {
@@ -102,12 +82,15 @@ router.get('/user', authMiddleware, async (req, res) => {
 });
 
 // Endpoint para actualizar equipo por ID
-router.put('/:id', authMiddleware, async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
-        const equipmentId = req.params.id;
+        const equipmentId= req.params.id;
         const updatedData = req.body;
 
-        const updatedEquipment = await equipmentUseCase.editEquipment(equipmentId, updatedData);
+        const updatedEquipment = await equipmentUseCase.updateEquiment(
+          equipmentId,
+          updatedData
+        )
         
         return res.status(200).json({ success: true, data: updatedEquipment });
     } catch (error) {
@@ -122,7 +105,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 });
 
 // Endpoint para eliminar equipo por ID
-router.delete('/:id', authMiddleware, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const equipmentId = req.params.id;
 
@@ -172,6 +155,17 @@ router.get('/company/:companyId', authMiddleware, async (req, res) => {
         return res.status(500).json({ success: false, error: 'Error retrieving equipment by company' });
     }
 });
+
+router.get('/:id', async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const equipment = await equipmentUseCase.getById(id);
+        res.status(200).json(equipment);
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message });
+    }
+})
 
 module.exports = router;
 

@@ -70,7 +70,6 @@ router.get('/profile', auth, async (request, response) => {
 router.post('/', auth, async (request, response) => {
   try {
     // Verificar que el usuario logueado es un administrador
-    console.log('request.user:', request.user);
     if (request.user.role !== 'admin') {
       throw createError(403, 'Access denied');
     }
@@ -109,7 +108,7 @@ router.delete('/:userId', async (request, response) => {
   }
 });
 
-//Get user by id para vista de administrador
+//Get user by id para vista de administrador de edicion de usuarios
 router.get('/:userId', async (req, res) => {
   const { userId } = req.params;
 

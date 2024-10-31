@@ -1,42 +1,45 @@
 /* eslint-disable no-undef */
 const Equipment = require('../models/equipment.model');
 const createError = require('http-errors');
+const Company = require('../models/companies.model');
+const user = require('../models/user.created.perfil');
 
-async function createEquipment(equipmentName, model, manufactureDate, brand, location, unitType, image, qr, userId, owner) {
+async function createEquipment(userData, creatorId) {
   try {
     const equipmentFound = await Equipment.findOne({
-      equipmentName: equipmentName,
-      model: model
-    });
-
+      equipmentName: userData.equipmentName,
+      model: userData.model
+    }) 
     if (equipmentFound) {
-      throw createError(409, 'Equipment with the same name and model already exists');
+      throw createError(
+        409,
+        'Equipment with the same name and model already exists'
+      )
+    }
+    const creator = await user.findById(creatorId)
+    if(!creator){
+      throw createError(404, 'User not found')
     }
 
-    if (!image) {
-      console.warn('Image field is missing or invalid');
+    const company = await Company.findById(creator.company)
+    if(!company){
+      throw createError(404, 'Company not found')
     }
 
-    const newEquipment = await Equipment.create({
-      equipmentName,
-      model,
-      company: userId, 
-      owner, 
-      manufactureDate,
-      brand,
-      location,
-      unitType,
-      image, 
-      qr     
-    });
+    const newEquipment = new Equipment({
+      ...userData,
+      company: company._id
+     })
 
-    return newEquipment;
+     await newEquipment.save()
+
+    return newEquipment
   } catch (error) {
-    console.error('Error details:', error); 
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error creating equipment');
+      throw createError(500, 'Error creating equipment')
     }
   }
 }
@@ -79,21 +82,23 @@ async function editEquipment(id, updatedData) {
   }
 }
 
-async function deleteEquipment(id) {
+async function deleteEquipment(userId) {
+  if (!userId) {
+    throw createError(400, 'Invalid input')
+  }
   try {
-    const deletedEquipment = await Equipment.findByIdAndDelete(id);
-
-    if (!deletedEquipment) {
-      throw createError(404, 'Equipment not found');
+    const equipmentDeleted = await Equipment.findByIdAndDelete(userId)
+    if (!equipmentDeleted) {
+      throw createError(404, 'Equipment not found')
     }
 
-    return deletedEquipment;
+    return equipmentDeleted
   } catch (error) {
-    console.error('Error details:', error); 
+    console.error('Error details:', error)
     if (error.status) {
-      throw error;
+      throw error
     } else {
-      throw createError(500, 'Error deleting equipment');
+      throw createError(500, 'Error deleting equipment')
     }
   }
 }
@@ -108,13 +113,14 @@ async function getAllEquipment() {
   }
 }
 
-async function getEquipmentByCompanyId(companyId) {
+async function getEquipmentByCompany(companyId) {
   try {
     const equipment = await Equipment.find({ company: companyId });
 
     if (!equipment || equipment.length === 0) {
       throw createError(404, 'No equipment found for this company');
     }
+    console.log(equipment)
 
     return equipment;
   } catch (error) {
@@ -127,14 +133,66 @@ async function getEquipmentByCompanyId(companyId) {
   }
 }
 
+async function updateEquiment(equipmentId, equipmentData) {
+  if (!equipmentId || !equipmentData) {
+    console.error('Invalid input:', { equipmentId, equipmentData }) // Agregar para depuración
+    throw createError(400, 'Invalid input')
+  }
+
+  try {
+    const equipmentFound = await Equipment.findById(equipmentId);
+    if (!equipmentFound) {
+      throw createError(404, 'Equipment not found');
+    }
+
+    const allowedUpdates = ['equipmentName', 'model', 'manufactureDate', 'brand', 'location', 'unitType', 'image', 'qr'];
+    const updates = Object.keys(equipmentData).filter(key => allowedUpdates.includes(key));
+
+    updates.forEach(key => {
+      equipmentFound[key] = equipmentData[key];
+    });
+
+    const updatedEquipment = await equipmentFound.save();
+
+    return updatedEquipment;
+  } catch (error) {
+    console.error('Error updating equipment:', error);
+    if (error.status) {
+      throw error;
+    }
+    throw createError(500, 'Error updating equipment');
+  }
+}
+
+async function getById(equipmentId) {
+  try {
+    
+    const equipmentFound = await Equipment.findById(equipmentId);
+
+    if (!equipmentFound) {
+      throw createError(404, 'Equipment not found');
+    }
+
+    await equipmentFound.populate({
+      path: 'company',
+      select: 'name' // Solo selecciona el nombre
+    })
+    return equipmentFound
+  } catch (error) {
+    throw createError(500, error.message);
+  }
+ }
+
 module.exports = {
   createEquipment,
   editEquipment,
   deleteEquipment,
   getAllEquipment,
-  getEquipmentByCompanyId,
-  getEquipmentByUserId 
-};
+  getEquipmentByCompany,
+  getEquipmentByUserId,
+  updateEquiment,
+  getById
+}
 
 
 
