@@ -183,16 +183,33 @@ async function getById(equipmentId) {
   }
  }
 
+async function getEquipmentById(equipmentId) {
+  try {
+    const equipment = await Equipment.findById(equipmentId);
+
+    if (!equipment) {
+      throw createError(404, 'Equipment not found');
+    }
+
+    return equipment;
+  } catch (error) {
+    console.error('Error details:', error);
+    if (error.status) {
+      throw error;
+    } else {
+      throw createError(500, 'Error retrieving equipment by ID');
+    }
+  }
+}
 module.exports = {
   createEquipment,
   editEquipment,
   deleteEquipment,
   getAllEquipment,
-  getEquipmentByCompany,
+  getEquipmentByCompanyId,
   getEquipmentByUserId,
-  updateEquiment,
-  getById
-}
+  getEquipmentById, 
+};
 
 
 

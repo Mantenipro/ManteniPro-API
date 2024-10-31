@@ -156,16 +156,24 @@ router.get('/company/:companyId', authMiddleware, async (req, res) => {
     }
 });
 
-router.get('/:id', async(req, res) => {
-    const { id } = req.params;
-
+// Endpoint para obtener equipo por ID
+router.get('/:id', authMiddleware, async (req, res) => {
     try {
-        const equipment = await equipmentUseCase.getById(id);
-        res.status(200).json(equipment);
+        const equipmentId = req.params.id;
+
+        const equipment = await equipmentUseCase.getEquipmentById(equipmentId);
+        
+        return res.status(200).json({ success: true, data: equipment });
     } catch (error) {
-        res.status(error.status || 500).json({ message: error.message });
+        console.error('Error retrieving equipment by ID:', error.message);
+        console.error('Error stack trace:', error.stack);
+
+        if (error.status) {
+            return res.status(error.status).json({ success: false, error: error.message });
+        }
+        return res.status(500).json({ success: false, error: 'Error retrieving equipment by ID' });
     }
-})
+});
 
 module.exports = router;
 
