@@ -24,47 +24,47 @@ router.post('/', async (req, res) => {
 
     // Si la suscripción se restablece correctamente, actualiza la base de datos
     if (subscription.status === 'active') {
-      console.log('Subscription status is active, updating database');
+      console.log('Subscription status is active, updating database')
 
       // Buscar la suscripción con el ID de la suscripción y popular la referencia a la compañía
       const subscriptionDoc = await Subscription.findOne({
         stripeSubscriptionId: subscriptionId
       })
         .populate('companyId') // Populate para traer la referencia a la compañía
-        .exec();
+        .exec()
 
-      console.log('Subscription document found:', subscriptionDoc);
+      console.log('Subscription document found:', subscriptionDoc)
 
       if (!subscriptionDoc) {
         console.log(
           'Subscription not found for subscription ID:',
           subscriptionId
-        );
-        return res.status(404).json({ error: 'Subscription not found' });
+        )
+        return res.status(404).json({ error: 'Subscription not found' })
       }
 
-      const company = subscriptionDoc.companyId;
+      const company = subscriptionDoc.companyId
 
-      console.log('Company found:', company);
+      console.log('Company found:', company)
 
       if (!company) {
-        console.log('Company not found for subscription ID:', subscriptionId);
-        return res.status(404).json({ error: 'Company not found' });
+        console.log('Company not found for subscription ID:', subscriptionId)
+        return res.status(404).json({ error: 'Company not found' })
       }
 
       // Actualizar los campos relacionados con la suscripción
-      company.isActive = true;
-      Subscription.cancelAtPeriodEnd = false
+      company.isActive = true
+      subscriptionDoc.cancelAtPeriodEnd = false // Actualiza el campo en la instancia de suscripción
 
       // Guardar la compañía con los datos actualizados
-      await company.save();
-      await Subscription.save()
+      await company.save()
+      await subscriptionDoc.save() // Guarda la instancia de suscripción
 
-      console.log('Company subscription status updated in the database');
+      console.log('Company subscription status updated in the database')
 
       return res.status(200).json({
         message: 'Subscription reactivated and database updated successfully'
-      });
+      })
     } else {
       // Si la suscripción no está realmente activa
       console.log('Subscription status is not active:', subscription.status);
