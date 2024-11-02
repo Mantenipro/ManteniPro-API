@@ -54,9 +54,11 @@ router.post('/', async (req, res) => {
 
       // Actualizar los campos relacionados con la suscripción
       company.isActive = true;
+      suscriptionDoc.cancelAtPeriodEnd = false;
 
       // Guardar la compañía con los datos actualizados
       await company.save();
+      await subscriptionDoc.save();
 
       console.log('Company subscription status updated in the database');
 
