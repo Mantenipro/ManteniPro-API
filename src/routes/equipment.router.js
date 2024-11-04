@@ -245,5 +245,25 @@ router.get('/:id', authMiddleware, async (req, res) => {
   }
 })
 
+router.get('/owner/:ownerId', authMiddleware, async (req, res) => {
+  try {
+    const ownerId = req.params.ownerId; // Get ownerId from request parameters
+
+    const equipmentByOwner = await equipmentUseCase.getEquipmentByOwner(ownerId); // Call the use case
+
+    return res.status(200).json({ success: true, data: equipmentByOwner }); // Return the equipment list
+  } catch (error) {
+    console.error('Error retrieving equipment by owner:', error.message);
+    console.error('Error stack trace:', error.stack);
+
+    if (error.status) {
+      return res.status(error.status).json({ success: false, error: error.message });
+    }
+    return res.status(500).json({ success: false, error: 'Error retrieving equipment by owner' });
+  }
+});
+
+
+
 module.exports = router
 
