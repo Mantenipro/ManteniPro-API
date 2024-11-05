@@ -1,10 +1,16 @@
 const createError = require('http-errors');
 const Report = require('../models/report.model');
 
-async function createReport(title, image, description, user, company) {
+async function createReport(title, image, description, user, company, equipment, status) {
     try {
-        if (!title || !description || !user || !company) {
+        if (!title || !description || !user || !company || !equipment || !status) {
             throw createError(400, 'Faltan campos requeridos');
+        }
+
+        // Validar que el status esté dentro de los valores permitidos
+        const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+        if (!validStatuses.includes(status)) {
+            throw createError(400, 'Estado inválido');
         }
 
         const newReport = await Report.create({
@@ -12,7 +18,9 @@ async function createReport(title, image, description, user, company) {
             image,
             description,
             user,
-            company
+            company,
+            equipment,
+            status // Incluir status en la creación del reporte
         });
 
         return newReport;
@@ -42,11 +50,24 @@ async function getReportById(id) {
     }
 }
 
-async function updateReport(id, title, image, description, user, company) {
+async function updateReport(id, title, image, description, user, company, equipment, status) {
     try {
+        // Crear un objeto con los campos a actualizar
+        const updates = { title, image, description, user, company, equipment };
+
+        // Solo agregar status si se ha proporcionado
+        if (status) {
+            // Validar que el status esté dentro de los valores permitidos
+            const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+            if (!validStatuses.includes(status)) {
+                throw createError(400, 'Estado inválido');
+            }
+            updates.status = status;
+        }
+
         const updatedReport = await Report.findByIdAndUpdate(
             id,
-            { title, image, description, user, company },
+            updates,
             { new: true, runValidators: true }
         );
 
@@ -71,10 +92,24 @@ async function deleteReport(id) {
     }
 }
 
+async function getReportsByUser(userId) {
+    try {
+        const reports = await Report.find({ user: userId });
+        if (!reports || reports.length === 0) {
+            throw createError(404, 'No se encontraron reportes para el usuario especificado');
+        }
+        return reports;
+    } catch (error) {
+        throw createError(500, `Error al obtener los reportes por usuario: ${error.message}`);
+    }
+}
+
 module.exports = {
     createReport,
     getAllReports,
     getReportById,
     updateReport,
     deleteReport,
+    getReportsByUser,
 };
+

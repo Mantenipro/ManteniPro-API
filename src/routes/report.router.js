@@ -39,7 +39,7 @@ router.post('/s3/presigned-url', async (req, res) => {
         console.error('Error generando la URL pre-firmada:', error);
         res.status(500).json({
             success: false,
-            error: 'Error generating presigned URL',
+            error: 'Error generando la URL pre-firmada',
         });
     }
 });
@@ -47,19 +47,31 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo reporte
 router.post('/', async (req, res) => {
     try {
-        const { title, image, description, user, company } = req.body;
-        if (!title || !user || !company) {
+        const { title, image, description, user, company, equipment, status } = req.body;
+        if (!title || !description || !user || !company || !equipment) {
             return res.status(400).json({
                 success: false,
                 error: 'Faltan campos requeridos',
             });
         }
+
+        // Validar que el status esté dentro de los valores permitidos si se proporciona
+        const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Estado inválido',
+            });
+        }
+
         const newReport = await Report.create({
             title,
             image,
             description,
             user,
             company,
+            equipment,
+            status, // Incluir status solo si se proporciona
         });
 
         res.status(201).json({
@@ -75,7 +87,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Otros endpoints (get, put, delete) permanecen igual
+// Endpoint para obtener todos los reportes
 router.get('/', async (req, res) => {
     try {
         const reports = await Report.find();
@@ -92,6 +104,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Endpoint para obtener un reporte por su ID
 router.get('/:id', async (req, res) => {
     try {
         const report = await Report.findById(req.params.id);
@@ -114,12 +127,30 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Endpoint para actualizar un reporte
 router.put('/:id', async (req, res) => {
     try {
-        const { title, image, description, user, company } = req.body;
+        const { title, image, description, user, company, equipment, status } = req.body;
+
+        // Crear un objeto con los campos a actualizar
+        const updates = { title, image, description, user, company, equipment };
+
+        // Solo agregar status si se ha proporcionado
+        if (status) {
+            // Validar que el status esté dentro de los valores permitidos
+            const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Estado inválido',
+                });
+            }
+            updates.status = status; // Incluir status en la actualización
+        }
+
         const updatedReport = await Report.findByIdAndUpdate(
             req.params.id,
-            { title, image, description, user, company },
+            updates,
             { new: true, runValidators: true }
         );
 
@@ -143,6 +174,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Endpoint para eliminar un reporte
 router.delete('/:id', async (req, res) => {
     try {
         const deletedReport = await Report.findByIdAndDelete(req.params.id);
@@ -162,6 +194,34 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Error al eliminar el reporte',
+        });
+    }
+});
+
+// Endpoint para obtener reportes por usuario
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Busca reportes asociados al usuario especificado
+        const reports = await Report.find({ user: userId });
+
+        if (!reports || reports.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No se encontraron reportes para el usuario especificado',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+        });
+    } catch (error) {
+        console.error('Error al obtener los reportes por usuario:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los reportes por usuario',
         });
     }
 });
