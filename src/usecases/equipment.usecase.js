@@ -163,6 +163,27 @@ async function getEquipmentById(equipmentId) {
     }
   }
 }
+
+
+async function getEquipmentByOwner(ownerId) {
+  try {
+    const equipmentByOwner = await Equipment.find({ owner: ownerId });
+
+    if (!equipmentByOwner || equipmentByOwner.length === 0) {
+      throw createError(404, 'No equipment found for this owner');
+    }
+
+    return equipmentByOwner;
+  } catch (error) {
+    console.error('Error details:', error);
+    if (error.status) {
+      throw error;
+    } else {
+      throw createError(500, 'Error retrieving equipment by owner');
+    }
+  }
+}
+
 module.exports = {
   createEquipment,
   editEquipment,
@@ -170,5 +191,6 @@ module.exports = {
   getAllEquipment,
   getEquipmentByCompanyId,
   getEquipmentByUserId,
-  getEquipmentById
-}
+  getEquipmentById,
+  getEquipmentByOwner 
+};

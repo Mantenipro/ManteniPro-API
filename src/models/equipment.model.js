@@ -18,7 +18,8 @@ const equipmentSchema = new mongoose.Schema({
     ref: 'User',
   },
   owner: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', 
     required: true,
   },
   manufactureDate: {
@@ -56,6 +57,7 @@ const equipmentSchema = new mongoose.Schema({
 const Equipment = mongoose.model('Equipment', equipmentSchema);
 
 module.exports = Equipment;
+
 
 
 

@@ -5,6 +5,7 @@ const Report = require('../models/report.model');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const createError = require('http-errors'); // Asegúrate de tener esta dependencia para errores.
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.post('/s3/presigned-url', async (req, res) => {
         console.error('Error generando la URL pre-firmada:', error);
         res.status(500).json({
             success: false,
-            error: 'Error generating presigned URL',
+            error: 'Error generando la URL pre-firmada',
         });
     }
 });
@@ -47,19 +48,43 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo reporte
 router.post('/', async (req, res) => {
     try {
-        const { title, image, description, user, company } = req.body;
-        if (!title || !user || !company) {
+        const { title, image, description, user, company, equipment, status, priority } = req.body;
+
+        // Validar campos requeridos
+        if (!title || !description || !user || !company || !equipment) {
             return res.status(400).json({
                 success: false,
                 error: 'Faltan campos requeridos',
             });
         }
+
+        // Validar que el status esté dentro de los valores permitidos si se proporciona
+        const validStatuses = ['pending', 'in-progress', 'completed'];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Estado inválido',
+            });
+        }
+
+        // Validar que el priority esté dentro de los valores permitidos
+        const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
+        if (priority && !validPriorities.includes(priority)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Prioridad inválida',
+            });
+        }
+
         const newReport = await Report.create({
             title,
             image,
             description,
             user,
             company,
+            equipment,
+            status, // Incluir status solo si se proporciona
+            priority: priority || 'Sin Prioridad', // Asignar valor predeterminado si no se especifica
         });
 
         res.status(201).json({
@@ -75,10 +100,16 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Otros endpoints (get, put, delete) permanecen igual
+// Endpoint para obtener todos los reportes, con opción de filtrar por prioridad
 router.get('/', async (req, res) => {
     try {
-        const reports = await Report.find();
+        const { priority } = req.query;  // Obtener el parámetro de query 'priority'
+
+        // Si se proporciona un valor para priority, filtrar los reportes por prioridad
+        const filter = priority ? { priority } : {};  // Si no hay 'priority', se obtienen todos los reportes
+
+        const reports = await Report.find(filter);
+
         res.status(200).json({
             success: true,
             data: reports,
@@ -92,6 +123,7 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Endpoint para obtener un reporte por su ID
 router.get('/:id', async (req, res) => {
     try {
         const report = await Report.findById(req.params.id);
@@ -114,12 +146,41 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Endpoint para actualizar un reporte
 router.put('/:id', async (req, res) => {
     try {
-        const { title, image, description, user, company } = req.body;
+        const { title, image, description, user, company, equipment, status, priority } = req.body;
+
+        // Crear un objeto con los campos a actualizar
+        const updates = { title, image, description, user, company, equipment };
+
+        // Validar que el status esté dentro de los valores permitidos
+        if (status) {
+            const validStatuses = ['pending', 'in-progress', 'completed'];
+            if (!validStatuses.includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Estado inválido',
+                });
+            }
+            updates.status = status;
+        }
+
+        // Validar que el priority esté dentro de los valores permitidos
+        if (priority) {
+            const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
+            if (!validPriorities.includes(priority)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Prioridad inválida',
+                });
+            }
+            updates.priority = priority;  // Incluir priority en la actualización
+        }
+
         const updatedReport = await Report.findByIdAndUpdate(
             req.params.id,
-            { title, image, description, user, company },
+            updates,
             { new: true, runValidators: true }
         );
 
@@ -143,6 +204,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Endpoint para eliminar un reporte
 router.delete('/:id', async (req, res) => {
     try {
         const deletedReport = await Report.findByIdAndDelete(req.params.id);
@@ -162,6 +224,58 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             error: 'Error al eliminar el reporte',
+        });
+    }
+});
+
+// Endpoint para obtener reportes por usuario
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const reports = await Report.find({ user: userId });
+
+        if (!reports || reports.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No se encontraron reportes para el usuario especificado',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+        });
+    } catch (error) {
+        console.error('Error al obtener los reportes por usuario:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los reportes por usuario',
+        });
+    }
+});
+
+// Endpoint para obtener reportes por compañía
+router.get('/company/:companyId', async (req, res) => {
+    try {
+        const { companyId } = req.params;
+        const reports = await Report.find({ company: companyId });
+
+        if (!reports || reports.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No se encontraron reportes para la compañía especificada',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+        });
+    } catch (error) {
+        console.error('Error al obtener los reportes por compañía:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los reportes por compañía',
         });
     }
 });
