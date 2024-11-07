@@ -41,6 +41,11 @@ const reportSchema = new mongoose.Schema({
         required: false, 
         enum: ['pending', 'in-progress', 'completed'], 
         default: 'pending',
+    },
+    priority: {
+        type: String,
+        enum: ['Baja', 'Media', 'Alta', 'Sin Prioridad'], 
+        default: 'Sin Prioridad',
     }
 });
 

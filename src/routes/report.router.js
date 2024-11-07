@@ -48,7 +48,9 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo reporte
 router.post('/', async (req, res) => {
     try {
-        const { title, image, description, user, company, equipment, status } = req.body;
+        const { title, image, description, user, company, equipment, status, priority } = req.body;
+
+        // Validar campos requeridos
         if (!title || !description || !user || !company || !equipment) {
             return res.status(400).json({
                 success: false,
@@ -57,11 +59,20 @@ router.post('/', async (req, res) => {
         }
 
         // Validar que el status esté dentro de los valores permitidos si se proporciona
-        const validStatuses = ['pending', 'in-progress', 'completed',];
+        const validStatuses = ['pending', 'in-progress', 'completed'];
         if (status && !validStatuses.includes(status)) {
             return res.status(400).json({
                 success: false,
                 error: 'Estado inválido',
+            });
+        }
+
+        // Validar que el priority esté dentro de los valores permitidos
+        const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
+        if (priority && !validPriorities.includes(priority)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Prioridad inválida',
             });
         }
 
@@ -73,6 +84,7 @@ router.post('/', async (req, res) => {
             company,
             equipment,
             status, // Incluir status solo si se proporciona
+            priority: priority || 'Sin Prioridad', // Asignar valor predeterminado si no se especifica
         });
 
         res.status(201).json({
@@ -88,10 +100,16 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Endpoint para obtener todos los reportes
+// Endpoint para obtener todos los reportes, con opción de filtrar por prioridad
 router.get('/', async (req, res) => {
     try {
-        const reports = await Report.find();
+        const { priority } = req.query;  // Obtener el parámetro de query 'priority'
+
+        // Si se proporciona un valor para priority, filtrar los reportes por prioridad
+        const filter = priority ? { priority } : {};  // Si no hay 'priority', se obtienen todos los reportes
+
+        const reports = await Report.find(filter);
+
         res.status(200).json({
             success: true,
             data: reports,
@@ -131,22 +149,33 @@ router.get('/:id', async (req, res) => {
 // Endpoint para actualizar un reporte
 router.put('/:id', async (req, res) => {
     try {
-        const { title, image, description, user, company, equipment, status } = req.body;
+        const { title, image, description, user, company, equipment, status, priority } = req.body;
 
         // Crear un objeto con los campos a actualizar
         const updates = { title, image, description, user, company, equipment };
 
-        // Solo agregar status si se ha proporcionado
+        // Validar que el status esté dentro de los valores permitidos
         if (status) {
-            // Validar que el status esté dentro de los valores permitidos
-            const validStatuses = ['pending', 'in-progress', 'completed', ];
+            const validStatuses = ['pending', 'in-progress', 'completed'];
             if (!validStatuses.includes(status)) {
                 return res.status(400).json({
                     success: false,
                     error: 'Estado inválido',
                 });
             }
-            updates.status = status; // Incluir status en la actualización
+            updates.status = status;
+        }
+
+        // Validar que el priority esté dentro de los valores permitidos
+        if (priority) {
+            const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
+            if (!validPriorities.includes(priority)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Prioridad inválida',
+                });
+            }
+            updates.priority = priority;  // Incluir priority en la actualización
         }
 
         const updatedReport = await Report.findByIdAndUpdate(
@@ -203,8 +232,6 @@ router.delete('/:id', async (req, res) => {
 router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-
-        // Busca reportes asociados al usuario especificado
         const reports = await Report.find({ user: userId });
 
         if (!reports || reports.length === 0) {
@@ -231,8 +258,6 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/company/:companyId', async (req, res) => {
     try {
         const { companyId } = req.params;
-
-        // Busca reportes asociados a la compañía especificada
         const reports = await Report.find({ company: companyId });
 
         if (!reports || reports.length === 0) {
@@ -256,3 +281,4 @@ router.get('/company/:companyId', async (req, res) => {
 });
 
 module.exports = router;
+
