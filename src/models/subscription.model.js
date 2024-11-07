@@ -22,6 +22,11 @@ const subscriptionSchema = new mongoose.Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
+  },
+  plan: {
+    type: String,
+    enum: ['basic_plan', 'premium_plan'],
+    required: true
   }
 })
 

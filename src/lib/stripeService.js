@@ -40,6 +40,19 @@ async function getProductsAndPrices() {
   }
 }
 
+async function createSubscription(customerId, priceId) {
+  return await stripe.subscriptions.create({
+    customer: customerId,
+    items: [{ price: priceId }]
+  })
+}
+
+async function getSubscription(subscriptionId) {
+  return await stripe.subscriptions.retrieve(subscriptionId)
+}
+
 module.exports = {
-  getProductsAndPrices
+  getProductsAndPrices,
+  createSubscription,
+  getSubscription
 }

@@ -53,6 +53,10 @@ const userPerfilSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  suscription: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Subscription'
+  },
   accountStatus: {
     //Solo para los usuarios creados por el administrador
     type: Boolean,

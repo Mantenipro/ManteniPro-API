@@ -28,7 +28,7 @@ async function login(email, password) {
   // Si el rol es "admin", verificar la activación de la cuenta
   if (user.role === 'admin') {
     // Verificar si la cuenta está activa (buscar el mismo usuario pero con populate para obtener los datos relacionados)
-    const userWithForm = await users.findOne({ email }).populate('formRegister')
+    const userWithForm = await users.findOne({ email }).populate('formRegister').populate('suscription')
 
     // Añadimos un console.log para verificar si el populate trae los datos esperados
     console.log(
@@ -60,7 +60,6 @@ async function login(email, password) {
       console.log('Estado de activación de la cuenta:', user.accountStatus)
       throw createError(403, 'Cuenta no activada')
     }
-
     // Imprimir el objeto user en la consola
     console.log('Usuario encontrado y cuenta activada:', user)
   }
