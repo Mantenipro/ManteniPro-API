@@ -39,7 +39,7 @@ const reportSchema = new mongoose.Schema({
     status: {
         type: String, 
         required: false, 
-        enum: ['pending', 'in-progress', 'completed', 'archived'], 
+        enum: ['pending', 'in-progress', 'completed'], 
         default: 'pending',
     }
 });

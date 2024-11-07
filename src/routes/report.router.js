@@ -5,6 +5,7 @@ const Report = require('../models/report.model');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const createError = require('http-errors'); // Asegúrate de tener esta dependencia para errores.
 
 const router = express.Router();
 
@@ -56,7 +57,7 @@ router.post('/', async (req, res) => {
         }
 
         // Validar que el status esté dentro de los valores permitidos si se proporciona
-        const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+        const validStatuses = ['pending', 'in-progress', 'completed',];
         if (status && !validStatuses.includes(status)) {
             return res.status(400).json({
                 success: false,
@@ -138,7 +139,7 @@ router.put('/:id', async (req, res) => {
         // Solo agregar status si se ha proporcionado
         if (status) {
             // Validar que el status esté dentro de los valores permitidos
-            const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+            const validStatuses = ['pending', 'in-progress', 'completed', ];
             if (!validStatuses.includes(status)) {
                 return res.status(400).json({
                     success: false,
@@ -226,5 +227,32 @@ router.get('/user/:userId', async (req, res) => {
     }
 });
 
-module.exports = router;
+// Endpoint para obtener reportes por compañía
+router.get('/company/:companyId', async (req, res) => {
+    try {
+        const { companyId } = req.params;
 
+        // Busca reportes asociados a la compañía especificada
+        const reports = await Report.find({ company: companyId });
+
+        if (!reports || reports.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No se encontraron reportes para la compañía especificada',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+        });
+    } catch (error) {
+        console.error('Error al obtener los reportes por compañía:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los reportes por compañía',
+        });
+    }
+});
+
+module.exports = router;

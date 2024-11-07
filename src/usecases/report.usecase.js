@@ -8,7 +8,7 @@ async function createReport(title, image, description, user, company, equipment,
         }
 
         // Validar que el status esté dentro de los valores permitidos
-        const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+        const validStatuses = ['pending', 'in-progress', 'completed',];
         if (!validStatuses.includes(status)) {
             throw createError(400, 'Estado inválido');
         }
@@ -58,7 +58,7 @@ async function updateReport(id, title, image, description, user, company, equipm
         // Solo agregar status si se ha proporcionado
         if (status) {
             // Validar que el status esté dentro de los valores permitidos
-            const validStatuses = ['pending', 'in-progress', 'completed', 'archived'];
+            const validStatuses = ['pending', 'in-progress', 'completed', ];
             if (!validStatuses.includes(status)) {
                 throw createError(400, 'Estado inválido');
             }
@@ -101,6 +101,18 @@ async function getReportsByUser(userId) {
         return reports;
     } catch (error) {
         throw createError(500, `Error al obtener los reportes por usuario: ${error.message}`);
+    }
+}
+
+async function getReportsByCompany(companyId) {
+    try {
+        const reports = await Report.find({ company: companyId });
+        if (!reports || reports.length === 0) {
+            throw createError(404, 'No se encontraron reportes para la compañía especificada');
+        }
+        return reports;
+    } catch (error) {
+        throw createError(500, `Error al obtener los reportes por compañía: ${error.message}`);
     }
 }
 
