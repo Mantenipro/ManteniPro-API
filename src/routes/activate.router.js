@@ -9,11 +9,12 @@ const Register = require('../models/formRegister')
 router.post('/', async (request, response) => {
   const { token, activationCode } = request.body // Obtenemos el token y el código del cuerpo de la solicitud
 
+  
   try {
     // Verificar y decodificar el token JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    console.log('Decoded token:', decoded) // Depurar el contenido del token
     const userId = decoded.id
+    console.log('User ID:', userId)
 
     // Buscar al usuario por el ID
     const user = await Register.findById(userId)
@@ -47,7 +48,9 @@ router.post('/', async (request, response) => {
     user.activationCodeExpiration = undefined // Eliminamos la fecha de caducidad
     await user.save()
 
-    response.status(200).json({ message: 'Cuenta activada exitosamente.' })
+    response
+      .status(200)
+      .json({ success: true, message: 'Cuenta activada exitosamente.' })
   } catch (err) {
     response
       .status(500)

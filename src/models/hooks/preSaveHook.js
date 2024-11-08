@@ -30,7 +30,7 @@ async function preSaveHook(next) {
       await transporter.sendMail(mailOptions)
 
       this.activationCodeHash = await hashActivationCode(activationCode)
-      this.activationCodeExpiration = moment().add(7, 'days').toDate()
+      this.activationCodeExpiration = moment().add(1, 'hours').toDate()
 
       next()
     } catch (error) {

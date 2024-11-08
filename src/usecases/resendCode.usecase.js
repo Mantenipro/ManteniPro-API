@@ -11,7 +11,7 @@ const moment = require('moment')
 
 async function resendActivationCode(email) {
   // Verificar si el email existe en la base de datos
-  const user = await users.findOne({ email })
+  const user = await users.findOne({ email }).populate('formRegister')
 
   if (!user) {
     // Lanzar un error 404 si el email no se encuentra
@@ -22,16 +22,27 @@ async function resendActivationCode(email) {
   const activationCode = generateActivationCode()
 
   // Actualizar el usuario con el nuevo código de activación y la nueva fecha de expiración
-  user.activationCodeHash = await hashActivationCode(activationCode)
-  user.activationCodeExpiration = moment().add(1, 'hours').toDate()
-  await user.save()
+  if(user.role === 'admin') {
+    user.formRegister.activationCodeHash = await hashActivationCode(activationCode)
+    user.formRegister.activationCodeExpiration = moment()
+      .add(1, 'hours')
+      .toDate()
+    await user.formRegister.save()
+   } else {
+     user.activationCodeHash = await hashActivationCode(activationCode)
+     user.activationCodeExpiration = moment().add(1, 'hours').toDate()
+     await user.save()
+   }
 
   // Generar el token JWT
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '7d'
-  })
+  const tokenPayload = user.role === 'admin' ? { id: user.formRegister.id } : { id: user._id }
 
-  const activationLink = `http://localhost:3000/userActivate?token=${token}`
+  const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+    expiresIn: '1h'
+  })
+  
+  const activationPath = user.role === 'admin' ? 'activate' : 'userActivate'
+  const activationLink = `http://localhost:3000/${activationPath}?token=${token}`
   const transporter = await createTransporter()
   const mailOptions = {
     from: process.env.GMAIL_USER,

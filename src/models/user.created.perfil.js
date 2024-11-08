@@ -82,6 +82,10 @@ const userPerfilSchema = new mongoose.Schema(
     },
     unlockRequestExpiration: {
       type: Date
+    },
+    mustChangePassword: {
+      type: Boolean,
+      default: true
     }
   },
   { timestamps: true }

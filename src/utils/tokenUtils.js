@@ -55,9 +55,20 @@ async function hashActivationCode(activationCode) {
   return bcrypt.hash(activationCode, salt)
 }
 
+function generateUnlockCode() {
+  return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+async function hashUnlockCode(unlockCode) {
+  const salt = await bcrypt.genSalt(10)
+  return bcrypt.hash(unlockCode, salt)
+}
+
 module.exports = {
   getAccessToken,
   regenerateRefreshToken,
   generateActivationCode,
-  hashActivationCode
+  hashActivationCode,
+  generateUnlockCode,
+  hashUnlockCode
 }

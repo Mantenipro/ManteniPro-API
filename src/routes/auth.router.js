@@ -10,12 +10,15 @@ router.post('/login', async (request, response) => {
 
   try {
     const { email, password } = request.body
-    const token = await authUseCase.login(email, password)
+    const { token, mustChangePassword, role } = await authUseCase.login(
+      email,
+      password
+    )
 
     // Si el login es exitoso, devolver el token
     response.json({
       success: true,
-      data: { token }
+      data: { token, mustChangePassword, role }
     })
   } catch (error) {
     // Verifica si el error proviene del email o contraseña
