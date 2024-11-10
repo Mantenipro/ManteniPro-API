@@ -2,11 +2,12 @@
 const express = require('express')
 
 const authUseCase = require('../usecases/auth.usecase')
+const loginAttemptCounter = require('../middleware/loginAttempt.middleware')
 
 const router = express.Router()
 
 // POST /auth/login
-router.post('/login', async (request, response) => {
+router.post('/login', loginAttemptCounter, async (request, response) => {
 
   try {
     const { email, password } = request.body

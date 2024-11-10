@@ -120,6 +120,18 @@ router.get('/:userId', async (req, res) => {
   }
 });
 
+// Ruta para desbloquear un usuario
+router.post('/unlockUser', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await usersUseCase.unlockUser(email);
+    res.status(200).json({ success: true, data: user })
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
+});
+
 // Ruta para actualizar un usuario
 router.put('/:userId', async (req, res) => {
   const { userId } = req.params;

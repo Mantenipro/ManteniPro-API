@@ -77,12 +77,6 @@ const userPerfilSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    unlockRequestHash: {
-      type: String
-    },
-    unlockRequestExpiration: {
-      type: Date
-    },
     mustChangePassword: {
       type: Boolean,
       default: true

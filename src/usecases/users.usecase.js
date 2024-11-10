@@ -226,6 +226,36 @@ async function deleteUser(userId) {
   }
 }
 
+async function unlockUser(email) {
+  if (!email) {
+    throw createError(400, 'Invalid input')
+  }
+
+  try {
+    const userFound = await user.findOne({ email: email })
+    if (!userFound) {
+      throw createError(404, 'User not found')
+    }
+    // Establecer la contraseña por defecto y hashearla
+    const defaultPassword = 'Pa$$w0rd!'
+    const hashedPassword = await encrypt.encrypt(defaultPassword)
+    userFound.password = hashedPassword
+    userFound.mustChangePassword = true
+    userFound.unlockRequested = false
+    userFound.isLocked = false
+    userFound.failedLoginAttempts = 0
+    await userFound.save()
+  
+  
+  } catch (error) {
+    console.error('Error en unlockUser:', error) // Registrar el error completo
+    if (error.status) {
+      throw error
+    }
+    throw createError(500, 'Error unlocking user')
+  }
+}
+
 module.exports = {
   create,
   getById,
@@ -233,5 +263,6 @@ module.exports = {
   getUsersByCompany,
   getAllUsers,
   updateUser,
-  deleteUser
+  deleteUser,
+  unlockUser
 }

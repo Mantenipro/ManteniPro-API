@@ -20,8 +20,10 @@ router.post('/', async (request, response) => {
     // Hash de la nueva contraseña
     const hashedPassword = await bcrypt.hash(newPassword, 12)
     user.password = hashedPassword
-    user.resetToken = undefined
-    user.resetTokenExpiration = undefined
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpires = undefined
+    user.failedLoginAttempts = 0
+    user.isLocked = false
     await user.save()
 
     response.status(200)

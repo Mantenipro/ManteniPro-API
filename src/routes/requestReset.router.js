@@ -16,6 +16,14 @@ router.post('/', async (request, response) => {
       return response.status(404).json({ message: 'Usuario no encontrado' })
     }
 
+    if(user.isLocked) {
+      return response.status(403).json({ success: false, message: 'Cuenta bloqueada' })
+    }
+
+    if(user.role !== 'admin') {
+      return response.status(403).json({ success: false, message: 'No tienes permisos para realizar esta acción contacta a tu administrador' })
+    }
+
     // Generar token de restablecimiento de contraseña
     const resetPasswordToken = crypto.randomBytes(32).toString('hex')
     user.resetPasswordToken = resetPasswordToken
