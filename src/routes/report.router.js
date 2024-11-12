@@ -6,6 +6,7 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const createError = require('http-errors'); // Asegúrate de tener esta dependencia para errores.
+const reportUseCases = require('../usecases/report.usecase');
 
 const router = express.Router();
 
@@ -126,7 +127,7 @@ router.get('/', async (req, res) => {
 // Endpoint para obtener un reporte por su ID
 router.get('/:id', async (req, res) => {
     try {
-        const report = await Report.findById(req.params.id);
+        const report = await reportUseCases.getReportById(req.params.id)
         if (!report) {
             return res.status(404).json({
                 success: false,
@@ -135,7 +136,7 @@ router.get('/:id', async (req, res) => {
         }
         res.status(200).json({
             success: true,
-            data: report,
+            data: { report },
         });
     } catch (error) {
         console.error('Error al obtener el reporte:', error);

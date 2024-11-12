@@ -22,6 +22,7 @@ const s3Router = require('./routes/s3');
 const userActivateRouter = require('./routes/userActivate.router');
 const resendCodeRouter = require('./routes/resendCode.router');
 const changePasswordRouter = require('./routes/changePassword.router');
+const commentsRouter = require('./routes/comments.router');
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use('/api/s3', s3Router);
 app.use('/userActivate', userActivateRouter)
 app.use('/resend-activation-code', resendCodeRouter)
 app.use('/changePassword', changePasswordRouter)
+app.use('/comments', commentsRouter);
 
 app.get('/', (request, response) => {
     response.json({

@@ -5,6 +5,7 @@ const Register = require('../models/user.created.perfil')
 const bcrypt = require('bcryptjs')
 
 router.post('/', async (request, response) => {
+  console.log('request.body', request.body)
   const { token , newPassword } = request.body
 
   try {
@@ -27,7 +28,7 @@ router.post('/', async (request, response) => {
     await user.save()
 
     response.status(200)
-      .json({ message: 'La contraseña ha sido cambiada exitosamente.' })
+      .json({ succes: true, message: 'La contraseña ha sido cambiada exitosamente.' })
   } catch (err) {
     console.error('[Error en el servidor]', err)
 

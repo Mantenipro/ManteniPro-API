@@ -39,7 +39,7 @@ router.post('/login', loginAttemptCounter, async (request, response) => {
 
     response.status(statusCode).json({
       success: false,
-      error: errorMessage
+      message: errorMessage
     })
   }
 })

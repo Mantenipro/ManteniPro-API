@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const createError = require('http-errors');
 const Report = require('../models/report.model');
 
@@ -50,7 +51,15 @@ async function getAllReports(priority) {
 
 async function getReportById(id) {
     try {
-        const report = await Report.findById(id);
+        const report = await Report.findById(id)
+          .populate({
+            path: 'user',
+            populate: {
+              path: 'company', // Popula la compañía dentro del usuario
+              model: 'Company'
+            }
+          })
+          .populate('equipment')
         if (!report) {
             throw createError(404, 'Reporte no encontrado');
         }
