@@ -2,10 +2,10 @@
 // usecases/commentsUsecase.js
 const Comment = require('../models/comments.model')
 
-// Función para obtener todos los comentarios de un usuario específico y un reporte específico
-async function getAllComments(userId, reportId) {
+// Función para obtener todos los comentarios de un reporte específico
+async function getAllComments(reportId) {
   try {
-    const comments = await Comment.find({ author: userId, report: reportId })
+    const comments = await Comment.find({ report: reportId })
       .populate({
         path: 'report',
         model: 'Reports' // Asegúrate de que el nombre del modelo sea correcto

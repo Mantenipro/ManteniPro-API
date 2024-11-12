@@ -1,83 +1,47 @@
-const createError = require('http-errors');
-const Assignment = require('../models/assignment.model');
+/* eslint-disable no-undef */
+const Assignment = require('../models/assignment.model')
+const Report = require('../models/report.model')
 
-async function createAssignment(assignedTo, company, priority, idReport) {
-    try {
-        if (!assignedTo || !company || !priority || !idReport) {
-            throw createError(400, 'Faltan campos requeridos');
-        }
-
-        const newAssignment = await Assignment.create({
-            assignedTo,
-            company,
-            priority,
-            idReport 
-        });
-
-        return newAssignment;
-    } catch (error) {
-        throw createError(500, `Error al crear la asignación: ${error.message}`);
-    }
+// Función para obtener todas las asignaciones de un técnico específico
+async function getAllAssignments(technicianId) {
+  try {
+    const assignments = await Assignment.find({ technician: technicianId })
+      .populate('technician') // Asegúrate de que los campos sean correctos
+      .populate('report'); // Asegúrate de que los campos sean correctos
+    return assignments;
+  } catch (error) {
+    throw new Error('Error al obtener las asignaciones: ' + error.message);
+  }
 }
 
-async function getAllAssignments() {
-    try {
-        const assignments = await Assignment.find();
-        return assignments;
-    } catch (error) {
-        throw createError(500, `Error al obtener las asignaciones: ${error.message}`);
-    }
+
+// Función para agregar una nueva asignación
+async function addAssignment(assignmentData) {
+  try {
+    const { technician, report, priority, status } = assignmentData;
+
+    // Crear nueva asignación
+    const newAssignment = new Assignment({ technician, report });
+    await newAssignment.save();
+
+    // Actualizar el reporte con la nueva prioridad y estado
+    await Report.findByIdAndUpdate(
+      report,
+      { priority, status },
+      { new: true }
+    );
+
+    return newAssignment;
+  } catch (error) {
+    throw new Error('Error al agregar la asignación: ' + error.message);
+  }
 }
 
-async function getAssignmentById(id) {
-    try {
-        const assignment = await Assignment.findById(id);
-        if (!assignment) {
-            throw createError(404, 'Asignación no encontrada');
-        }
-        return assignment;
-    } catch (error) {
-        throw createError(500, `Error al obtener la asignación: ${error.message}`);
-    }
-}
-
-async function updateAssignment(id, assignedTo, company, priority, idReport) {
-    try {
-        const updatedAssignment = await Assignment.findByIdAndUpdate(
-            id,
-            { assignedTo, company, priority, idReport }, 
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedAssignment) {
-            throw createError(404, 'Asignación no encontrada');
-        }
-        return updatedAssignment;
-    } catch (error) {
-        throw createError(500, `Error al modificar la asignación: ${error.message}`);
-    }
-}
-
-async function deleteAssignment(id) {
-    try {
-        const deletedAssignment = await Assignment.findByIdAndDelete(id);
-        if (!deletedAssignment) {
-            throw createError(404, 'Asignación no encontrada');
-        }
-        return deletedAssignment;
-    } catch (error) {
-        throw createError(500, `Error al eliminar la asignación: ${error.message}`);
-    }
-}
 
 module.exports = {
-    createAssignment,
-    getAllAssignments,
-    getAssignmentById,
-    updateAssignment,
-    deleteAssignment,
-};
-
+  getAllAssignments,
+  addAssignment
+}
 
 
 
