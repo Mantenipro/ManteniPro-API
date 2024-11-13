@@ -14,26 +14,25 @@ async function getAllAssignments(technicianId) {
   }
 }
 
-
 // Función para agregar una nueva asignación
 async function addAssignment(assignmentData) {
   try {
-    const { technician, report, priority, status } = assignmentData;
+    const { technician, report, priority, status } = assignmentData
 
-    // Crear nueva asignación
-    const newAssignment = new Assignment({ technician, report });
-    await newAssignment.save();
+    // Crear nueva asignación con el campo `assignedTo`
+    const newAssignment = new Assignment({ assignedTo: technician, report })
+    await newAssignment.save()
 
-    // Actualizar el reporte con la nueva prioridad y estado
+    // Actualizar el reporte con la nueva prioridad, estado y técnico asignado
     await Report.findByIdAndUpdate(
       report,
-      { priority, status },
+      { priority, status, assignedTo: technician },
       { new: true }
-    );
+    )
 
-    return newAssignment;
+    return newAssignment
   } catch (error) {
-    throw new Error('Error al agregar la asignación: ' + error.message);
+    throw new Error('Error al agregar la asignación: ' + error.message)
   }
 }
 

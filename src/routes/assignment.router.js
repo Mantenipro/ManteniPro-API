@@ -5,10 +5,11 @@ const {
   getAllAssignments,
   addAssignment
 } = require('../usecases/assignment.usecase')
+const auth = require('../middleware/auth.middleware')
 
 // Ruta para obtener todas las asignaciones de un técnico específico
-router.get('/:technicianId', async (req, res) => {
-  const { technicianId } = req.params;
+router.get('/', auth, async (req, res) => {
+  const technicianId = req.user.id
   try {
     const assignments = await getAllAssignments(technicianId);
     res.json(assignments);

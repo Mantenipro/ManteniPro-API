@@ -7,6 +7,7 @@ const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const createError = require('http-errors'); // Asegúrate de tener esta dependencia para errores.
 const reportUseCases = require('../usecases/report.usecase');
+const auth = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
@@ -122,6 +123,20 @@ router.get('/', async (req, res) => {
             error: 'Error al obtener los reportes',
         });
     }
+});
+
+// Ruta para obtener todos los reportes asignados a un técnico específico
+router.get('/tecnico', auth, async (req, res) => {
+  const technicianId = req.user.id; // Obtener el technicianId del token autenticado
+  try {
+    const reports = await reportUseCases.getReportsByTecnico(technicianId);
+    res.status(200).json({
+      success: true,
+      data: reports
+    });
+  } catch (error) {
+    res.status(error.status || 500).json({ message: error.message });
+  }
 });
 
 // Endpoint para obtener un reporte por su ID
@@ -280,6 +295,8 @@ router.get('/company/:companyId', async (req, res) => {
         });
     }
 });
+
+
 
 module.exports = router;
 

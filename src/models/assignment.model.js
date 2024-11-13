@@ -2,7 +2,7 @@
 const mongoose = require('mongoose')
 
 const assignmentSchema = new mongoose.Schema({
-  technician: {
+  assignedTo: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'userPerfil', // Asegúrate de que el nombre del modelo de usuario sea correcto
     required: true

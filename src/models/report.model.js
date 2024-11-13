@@ -29,6 +29,10 @@ const reportSchema = new mongoose.Schema({
     ref: 'Equipment', // Referencia al modelo 'Equipment'
     required: true
   },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'userPerfil'
+  },
   orderNumber: {
     type: Number,
     unique: true

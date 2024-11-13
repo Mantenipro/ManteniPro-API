@@ -132,6 +132,24 @@ async function getReportsByUser(userId) {
     }
 }
 
+async function getReportsByTecnico(technicianId) {
+  try {
+    const reports = await Report.find({ assignedTo: technicianId })
+    if (!reports || reports.length === 0) {
+      throw createError(
+        404,
+        'No se encontraron reportes para el técnico especificado'
+      )
+    }
+    return reports
+  } catch (error) {
+    throw createError(
+      500,
+      `Error al obtener los reportes por técnico: ${error.message}`
+    )
+  }
+}
+
 async function getReportsByCompany(companyId) {
     try {
         const reports = await Report.find({ company: companyId });
@@ -145,12 +163,13 @@ async function getReportsByCompany(companyId) {
 }
 
 module.exports = {
-    createReport,
-    getAllReports,
-    getReportById,
-    updateReport,
-    deleteReport,
-    getReportsByUser,
-    getReportsByCompany,
-};
+  createReport,
+  getAllReports,
+  getReportById,
+  updateReport,
+  deleteReport,
+  getReportsByUser,
+  getReportsByCompany,
+  getReportsByTecnico
+}
 
