@@ -274,7 +274,7 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/company/:companyId', async (req, res) => {
     try {
         const { companyId } = req.params;
-        const reports = await Report.find({ company: companyId });
+        const reports = await Report.find({ company: companyId }).populate('user');
 
         if (!reports || reports.length === 0) {
             return res.status(404).json({
