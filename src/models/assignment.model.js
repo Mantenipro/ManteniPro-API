@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
 const assignmentSchema = new mongoose.Schema({
   assignedTo: {
@@ -15,11 +15,20 @@ const assignmentSchema = new mongoose.Schema({
   assignedAt: {
     type: Date,
     default: Date.now
+  },
+  solution: {
+    type: String,
+    required: false // No es obligatorio
+  },
+  finishedAt: {
+    type: Date,
+    required: false // No es obligatorio
+  },
+  VaBo: {
+    type: String,
+    required: false // No es obligatorio
   }
-})
+});
 
-const Assignment = mongoose.model('Assignment', assignmentSchema)
-module.exports = Assignment
-
-
-
+const Assignment = mongoose.model('Assignment', assignmentSchema);
+module.exports = Assignment;
