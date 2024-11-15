@@ -129,7 +129,7 @@ router.get('/', async (req, res) => {
 router.get('/tecnico', auth, async (req, res) => {
   const technicianId = req.user.id; // Obtener el technicianId del token autenticado
   try {
-    const reports = await reportUseCases.getReportsByTecnico(technicianId);
+    const reports = await reportUseCases.getReportsByTecnico(technicianId)
     res.status(200).json({
       success: true,
       data: reports
@@ -248,7 +248,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/user/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
-        const reports = await Report.find({ user: userId });
+        const reports = await Report.find({ user: userId }).populate('user').populate('assignedTo')
 
         if (!reports || reports.length === 0) {
             return res.status(404).json({
@@ -274,8 +274,9 @@ router.get('/user/:userId', async (req, res) => {
 router.get('/company/:companyId', async (req, res) => {
     try {
         const { companyId } = req.params;
-        const reports = await Report.find({ company: companyId }).populate('user');
-
+        const reports = await Report.find({ company: companyId }).populate('assignedTo')
+          .populate('user')
+          .populate('equipment')
         if (!reports || reports.length === 0) {
             return res.status(404).json({
                 success: false,

@@ -134,7 +134,7 @@ async function getReportsByUser(userId) {
 
 async function getReportsByTecnico(technicianId) {
   try {
-    const reports = await Report.find({ assignedTo: technicianId })
+    const reports = await Report.find({ assignedTo: technicianId }).populate('user').populate('assignedTo')
     if (!reports || reports.length === 0) {
       throw createError(
         404,
