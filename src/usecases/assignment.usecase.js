@@ -2,12 +2,24 @@
 const Assignment = require('../models/assignment.model');
 const Report = require('../models/report.model');
 
+// Función para obtener todas las peticiones sin filtrar por técnico
+async function getAllRequests() {
+  try {
+    const assignments = await Assignment.find()
+      .populate('technician') // Asegúrate de que los campos sean correctos
+      .populate('report'); // Asegúrate de que los campos sean correctos
+    return assignments;
+  } catch (error) {
+    throw new Error('Error al obtener todas las peticiones: ' + error.message);
+  }
+}
+
 // Función para obtener todas las asignaciones de un técnico específico
 async function getAllAssignments(technicianId) {
   try {
     const assignments = await Assignment.find({ technician: technicianId })
-      .populate('technician') // Asegúrate de que los campos sean correctos
-      .populate('report'); // Asegúrate de que los campos sean correctos
+      .populate('technician')
+      .populate('report');
     return assignments;
   } catch (error) {
     throw new Error('Error al obtener las asignaciones: ' + error.message);
@@ -36,12 +48,11 @@ async function addAssignment(assignmentData) {
   }
 }
 
-// Nueva función para editar los campos: solution, finishedAt, VaBo
+// Función para editar los campos de la asignación por ID
 async function updateAssignmentFieldsById(assignmentId, updateData) {
   try {
     const { solution, finishedAt, VaBo } = updateData;
 
-    // Actualizar solo los campos permitidos
     const updatedAssignment = await Assignment.findByIdAndUpdate(
       assignmentId,
       { solution, finishedAt, VaBo },
@@ -58,22 +69,22 @@ async function updateAssignmentFieldsById(assignmentId, updateData) {
   }
 }
 
+// Función para actualizar la asignación por ID de reporte
 async function updateAssignmentByReportId(reportId, updateData) {
   try {
-    const { solution, finishedAt, VaBo, status } = updateData; // Extraemos los campos necesarios
+    const { solution, finishedAt, VaBo, status } = updateData;
 
-    // Buscar la asignación usando el reportId
     const updatedAssignment = await Assignment.findOneAndUpdate(
-      { report: reportId }, // Usar reportId para encontrar la asignación
-      { solution, finishedAt, VaBo, status }, // Incluir 'status' en los campos a actualizar
-      { new: true, runValidators: true } // Asegurarse de que se validen los datos
+      { report: reportId },
+      { solution, finishedAt, VaBo, status },
+      { new: true, runValidators: true }
     );
 
     if (!updatedAssignment) {
       throw new Error('Asignación no encontrada para el reporte especificado');
     }
 
-    // Si todos los campos requeridos están presentes, cambiamos el estado del reporte a "completed"
+    // Si todos los campos requeridos están presentes, cambiar el estado del reporte a "completed"
     if (solution && finishedAt && VaBo) {
       await Report.findByIdAndUpdate(reportId, { status: 'completed' }, { new: true });
     }
@@ -85,8 +96,9 @@ async function updateAssignmentByReportId(reportId, updateData) {
 }
 
 module.exports = {
+  getAllRequests,
   getAllAssignments,
   addAssignment,
   updateAssignmentFieldsById,
-  updateAssignmentByReportId // Exportar la nueva función
+  updateAssignmentByReportId
 };
