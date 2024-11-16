@@ -165,6 +165,7 @@ async function getEquipmentById(equipmentId) {
 }
 
 
+
 async function getEquipmentByOwner(ownerId) {
   try {
     const equipmentByOwner = await Equipment.find({ owner: ownerId });

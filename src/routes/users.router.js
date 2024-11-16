@@ -3,8 +3,43 @@ const createError = require('http-errors'); // Manejo de errores
 const express = require('express');
 const usersUseCase = require('../usecases/users.usecase');
 const auth = require('../middleware/auth.middleware');
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const router = express.Router();
+
+// Configuración de AWS S3
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+});
+
+// Endpoint para generar una URL pre-firmada para subir una imagen a S3
+router.post('/s3/presigned-url', auth, async (req, res) => {
+  try {
+    const { fileName, fileType } = req.body;
+
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: fileName,
+      ContentType: fileType,
+    };
+
+    const command = new PutObjectCommand(params);
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 60 });
+
+    res.json({ url: signedUrl });
+  } catch (error) {
+    console.error('Error generando la URL pre-firmada:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error generating presigned URL',
+    });
+  }
+});
 
 // GET /users
 router.get('/', auth, async (request, response) => {
@@ -94,12 +129,12 @@ router.delete('/:userId', async (request, response) => {
   const { userId } = request.params;
 
   try {
-    const userDeleted = await usersUseCase.deleteUser(userId)
+    const userDeleted = await usersUseCase.deleteUser(userId);
 
     response.status(200).json({
       success: true,
-      data: userDeleted
-    })
+      data: userDeleted,
+    });
   } catch (error) {
     response.status(error.status || 500).json({
       success: false,
@@ -126,7 +161,7 @@ router.post('/unlockUser', async (req, res) => {
 
   try {
     const user = await usersUseCase.unlockUser(email);
-    res.status(200).json({ success: true, data: user })
+    res.status(200).json({ success: true, data: user });
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message });
   }
@@ -141,12 +176,11 @@ router.put('/:userId', async (req, res) => {
     const updatedUser = await usersUseCase.updateUser(userId, userData);
     res.status(200).json({
       success: true,
-      data: updatedUser
-    })
+      data: updatedUser,
+    });
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message });
   }
 });
-
 
 module.exports = router;

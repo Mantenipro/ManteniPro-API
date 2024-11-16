@@ -51,7 +51,7 @@ const equipmentSchema = new mongoose.Schema({
     trim: true,
   },
 }, {
-  timestamps: true // Esto agregará createdAt y updatedAt automáticamente
+  timestamps: true 
 });
 
 const Equipment = mongoose.model('Equipment', equipmentSchema);

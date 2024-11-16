@@ -182,8 +182,8 @@ async function updateUser(userId, userData) {
       throw createError(404, 'User not found');
     }
 
-    // Filtrar los datos permitidos
-    const allowedUpdates = ['name', 'role', 'type'];
+    // Filtrar los datos permitidos, agregando 'photo' a la lista
+    const allowedUpdates = ['name', 'role', 'type', 'photo'];
     const updates = Object.keys(userData).filter(key => allowedUpdates.includes(key));
 
     // Actualizar los datos del usuario
@@ -203,6 +203,7 @@ async function updateUser(userId, userData) {
     throw createError(500, 'Error updating user');
   }
 }
+
 
 //Eliminar un usuario
 async function deleteUser(userId) {
