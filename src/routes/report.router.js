@@ -297,6 +297,31 @@ router.get('/company/:companyId', async (req, res) => {
     }
 });
 
+// Endpoint para obtener reportes por técnico
+router.get('/technician/:technicianId', async (req, res) => {
+    try {
+        const { technicianId } = req.params;
+        const reports = await reportUseCases.getReportsByTecnico(technicianId);
+
+        if (!reports || reports.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: 'No se encontraron reportes para el técnico especificado',
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: reports,
+        });
+    } catch (error) {
+        console.error('Error al obtener los reportes por técnico:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Error al obtener los reportes por técnico',
+        });
+    }
+});
 
 
 module.exports = router;

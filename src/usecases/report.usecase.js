@@ -162,6 +162,9 @@ async function getReportsByCompany(companyId) {
     }
 }
 
+
+
+
 module.exports = {
   createReport,
   getAllReports,
