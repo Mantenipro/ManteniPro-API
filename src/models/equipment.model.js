@@ -24,7 +24,7 @@ const equipmentSchema = new mongoose.Schema({
   },
   manufactureDate: {
     type: Date,
-    required: true,
+    required: false,
   },
   brand: {
     type: String,
@@ -57,6 +57,7 @@ const equipmentSchema = new mongoose.Schema({
 const Equipment = mongoose.model('Equipment', equipmentSchema);
 
 module.exports = Equipment;
+
 
 
 

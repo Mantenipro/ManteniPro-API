@@ -15,42 +15,37 @@ async function createEquipment(
   owner
 ) {
   try {
-    const equipmentFound = await Equipment.findOne({
-      equipmentName: equipmentName,
-      model: model
-    })
-
-    if (equipmentFound) {
-      throw createError(
-        409,
-        'Equipment with the same name and model already exists'
-      )
-    }
-
     if (!image) {
-      console.warn('Image field is missing or invalid')
+      console.warn('Image field is missing or invalid');
     }
 
-    const newEquipment = await Equipment.create({
+    // Construir el objeto solo con los campos definidos
+    const equipmentData = {
       equipmentName,
       model,
       company: userId,
       owner,
-      manufactureDate,
       brand,
       location,
       unitType,
       image,
-      qr
-    })
+      qr,
+    };
 
-    return newEquipment
+    // Agregar manufactureDate solo si existe
+    if (manufactureDate) {
+      equipmentData.manufactureDate = manufactureDate;
+    }
+
+    const newEquipment = await Equipment.create(equipmentData);
+
+    return newEquipment;
   } catch (error) {
-    console.error('Error details:', error)
+    console.error('Error details:', error);
     if (error.status) {
-      throw error
+      throw error;
     } else {
-      throw createError(500, 'Error creating equipment')
+      throw createError(500, 'Error creating equipment');
     }
   }
 }
@@ -184,6 +179,7 @@ async function getEquipmentByOwner(ownerId) {
     }
   }
 }
+
 
 module.exports = {
   createEquipment,

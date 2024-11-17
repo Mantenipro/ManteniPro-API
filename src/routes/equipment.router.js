@@ -46,26 +46,26 @@ router.post('/', authMiddleware, async (req, res) => {
     if (!req.user || !req.user.id) {
       return res
         .status(401)
-        .json({ success: false, error: 'User not authenticated' })
+        .json({ success: false, error: 'User not authenticated' });
     }
 
     const {
       equipmentName,
       model,
-      manufactureDate,
+      manufactureDate, // Ahora opcional
       brand,
       location,
       unitType,
       image,
       qr,
       owner
-    } = req.body
-    const userId = req.user.id
+    } = req.body;
+    const userId = req.user.id;
 
+    // Validar solo los campos realmente obligatorios
     if (
       !equipmentName ||
       !model ||
-      !manufactureDate ||
       !brand ||
       !location ||
       !unitType ||
@@ -73,13 +73,14 @@ router.post('/', authMiddleware, async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ success: false, error: 'Missing required fields' })
+        .json({ success: false, error: 'Missing required fields' });
     }
 
+    // Crear el equipo con la lógica ajustada en el caso de uso
     const newEquipment = await equipmentUseCase.createEquipment(
       equipmentName,
       model,
-      manufactureDate,
+      manufactureDate, // Puede ser undefined si no se envía
       brand,
       location,
       unitType,
@@ -87,23 +88,23 @@ router.post('/', authMiddleware, async (req, res) => {
       qr,
       userId,
       owner
-    )
+    );
 
-    return res.status(201).json({ success: true, data: newEquipment })
+    return res.status(201).json({ success: true, data: newEquipment });
   } catch (error) {
-    console.error('Error creating equipment:', error.message)
-    console.error('Error stack trace:', error.stack)
+    console.error('Error creating equipment:', error.message);
+    console.error('Error stack trace:', error.stack);
 
     if (error.status) {
       return res
         .status(error.status)
-        .json({ success: false, error: error.message })
+        .json({ success: false, error: error.message });
     }
     return res
       .status(500)
-      .json({ success: false, error: 'Error creating equipment' })
+      .json({ success: false, error: 'Error creating equipment' });
   }
-})
+});
 
 // Endpoint para obtener equipos creados por el usuario autenticado
 router.get('/user', authMiddleware, async (req, res) => {
@@ -262,7 +263,6 @@ router.get('/owner/:ownerId', authMiddleware, async (req, res) => {
     return res.status(500).json({ success: false, error: 'Error retrieving equipment by owner' });
   }
 });
-
 
 
 
