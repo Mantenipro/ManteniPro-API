@@ -8,6 +8,7 @@ const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const createError = require('http-errors'); // Asegúrate de tener esta dependencia para errores.
 const reportUseCases = require('../usecases/report.usecase');
 const auth = require('../middleware/auth.middleware');
+const { canCreateTicket } = require('../utils/ticketUtils')
 
 const router = express.Router();
 
@@ -50,49 +51,66 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo reporte
 router.post('/', async (req, res) => {
     try {
-        const { title, image, description, user, company, equipment, status, priority } = req.body;
+      const {
+        title,
+        image,
+        description,
+        user,
+        company,
+        equipment,
+        status,
+        priority
+      } = req.body
 
-        // Validar campos requeridos
-        if (!title || !description || !user || !company || !equipment) {
-            return res.status(400).json({
-                success: false,
-                error: 'Faltan campos requeridos',
-            });
-        }
+      // Validar campos requeridos
+      if (!title || !description || !user || !company || !equipment) {
+        return res.status(400).json({
+          success: false,
+          error: 'Faltan campos requeridos'
+        })
+      }
 
-        // Validar que el status esté dentro de los valores permitidos si se proporciona
-        const validStatuses = ['pending', 'in-progress', 'completed'];
-        if (status && !validStatuses.includes(status)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Estado inválido',
-            });
-        }
+      // Verificar el límite de tickets
+      if (!(await canCreateTicket(req.user.id))) {
+        return res.status(403).json({
+          success: false,
+          error: 'Has alcanzado el límite de tickets para este mes'
+        })
+      }
 
-        // Validar que el priority esté dentro de los valores permitidos
-        const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
-        if (priority && !validPriorities.includes(priority)) {
-            return res.status(400).json({
-                success: false,
-                error: 'Prioridad inválida',
-            });
-        }
+      // Validar que el status esté dentro de los valores permitidos si se proporciona
+      const validStatuses = ['pending', 'in-progress', 'completed']
+      if (status && !validStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Estado inválido'
+        })
+      }
 
-        const newReport = await Report.create({
-            title,
-            image,
-            description,
-            user,
-            company,
-            equipment,
-            status, // Incluir status solo si se proporciona
-            priority: priority || 'Sin Prioridad', // Asignar valor predeterminado si no se especifica
-        });
+      // Validar que el priority esté dentro de los valores permitidos
+      const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad']
+      if (priority && !validPriorities.includes(priority)) {
+        return res.status(400).json({
+          success: false,
+          error: 'Prioridad inválida'
+        })
+      }
 
-        res.status(201).json({
-            success: true,
-            data: newReport,
-        });
+      const newReport = await Report.create({
+        title,
+        image,
+        description,
+        user,
+        company,
+        equipment,
+        status, // Incluir status solo si se proporciona
+        priority: priority || 'Sin Prioridad' // Asignar valor predeterminado si no se especifica
+      })
+
+      res.status(201).json({
+        success: true,
+        data: newReport
+      })
     } catch (error) {
         console.error('Error al crear el reporte:', error);
         res.status(500).json({

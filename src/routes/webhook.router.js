@@ -37,10 +37,15 @@ router.post(
     switch (event.type) {
       case 'customer.created': {
         const customer = event.data.object
+        const productId = subscription.items.data[0].price.product
 
         try {
           // Procesar el evento de creación de cliente
-          await handleCustomerCreated(customer)
+          await handleCustomerCreated(
+            subscription.customer,
+            subscription,
+            productId
+          )
         } catch (error) {
           console.error('Error processing customer.created:', error)
         }
@@ -110,7 +115,7 @@ async function handleCustomerCreated(customer) {
 }
 
 // Función para guardar la información de la suscripción
-async function saveSubscription(customerId, subscriptionData) {
+async function saveSubscription(customerId, subscriptionData, productId) {
   try {
     console.log('Searching for user with stripeCustomerId:', customerId)
 
@@ -141,6 +146,49 @@ async function saveSubscription(customerId, subscriptionData) {
       subscriptionData.current_period_end * 1000
     )
 
+    // Definir las funcionalidades según el productId
+    let features = []
+    if (productId === 'prod_R023GfgtRfPNC7') {
+      features = [
+        {
+          name: 'Gestión de Incidencias Limitada',
+          description: 'Maneja hasta 10 incidencias al mes.'
+        },
+        {
+          name: 'Soporte por Email',
+          description: 'Respuesta en 48 a 72 horas.'
+        },
+        {
+          name: 'Historial de Incidencias',
+          description: 'Accede a las incidencias de los últimos 30 días.'
+        },
+        {
+          name: '1 Administrador',
+          description: 'Un usuario con permisos para gestionar el sistema.'
+        }
+      ]
+    } else if (productId === 'prod_R024q1v8rr1odd') {
+      features = [
+        {
+          name: 'Manejo Ampliado de Incidencias',
+          description: 'Gestiona hasta 100 incidencias al mes.'
+        },
+        {
+          name: 'Soporte Prioritario por Email',
+          description: 'Respuesta en 24 a 48 horas.'
+        },
+        {
+          name: 'Historial de Incidencias Extendido',
+          description: 'Accede al historial de incidencias de hasta 6 meses.'
+        },
+        {
+          name: '2 Administradores',
+          description:
+            'Agrega un segundo administrador para compartir responsabilidades en la gestión.'
+        }
+      ]
+    }
+
     // Crear una nueva suscripción
     console.log('Creating new subscription...')
     const subscription = new Subscription({
@@ -149,7 +197,9 @@ async function saveSubscription(customerId, subscriptionData) {
       status: subscriptionData.plan.active,
       currentPeriodStart: currentPeriodStart,
       currentPeriodEnd: currentPeriodEnd,
-      companyId: company._id // Referencia a la compañía
+      companyId: company._id, // Referencia a la compañía
+      productId: productId, // Agregar el productId
+      features: features // Asociar funcionalidades
     })
 
     // Guardar la suscripción en la base de datos

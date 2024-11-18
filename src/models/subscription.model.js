@@ -22,7 +22,20 @@ const subscriptionSchema = new mongoose.Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company'
-  }
+  },
+  productId: {
+    type: String
+  },
+  features: [
+    {
+      name: String,
+      description: String,
+      isActive: {
+        type: Boolean,
+        default: true
+      }
+    }
+  ]
 })
 
 const Subscription = mongoose.model('Subscription', subscriptionSchema)
