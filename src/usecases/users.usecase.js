@@ -28,7 +28,6 @@ async function create(userData) {
 
     // Verificar si se proporciona un companyId y si la empresa existe
     if (userData.company) {
-      console.log('Company ID provided:', userData.company) // Mensaje de consola para depuración
       const companyFound = await Company.findById(userData.company)
 
       if (!companyFound) {
@@ -50,7 +49,6 @@ async function create(userData) {
     }
 
     // Retornamos el nuevo usuario, incluyendo la información de la empresa si fue populada
-    console.log('data:', newUser)
     return newUser
   } catch (error) {
     // Si ocurre un error, lo manejamos y lo lanzamos para que sea capturado externamente
@@ -152,7 +150,6 @@ async function createUsers(userData, creatorId) {
 async function getUsersByCompany(companyId) {
   try {
     const users = await user.find({ company: companyId })
-    console.log('Users found:', users) // Agrega esto para verificar los usuarios encontrados
     return users
   } catch (error) {
     throw createError(500, error.message)
@@ -163,7 +160,6 @@ async function getUsersByCompany(companyId) {
 async function getAllUsers() {
   try {
     const users = await user.find(); // Busca todos los usuarios en la base de datos
-    console.log('All users found:', users); // Mensaje de consola para depuración
     return users; // Retorna la lista de usuarios
   } catch (error) {
     throw createError(500, error.message); // Manejo de errores
