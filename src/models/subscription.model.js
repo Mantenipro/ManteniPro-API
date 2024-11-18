@@ -35,7 +35,11 @@ const subscriptionSchema = new mongoose.Schema({
         default: true
       }
     }
-  ]
+  ],
+  hasReachedTicketLimit: {
+    type: Boolean,
+    default: false
+  }
 })
 
 const Subscription = mongoose.model('Subscription', subscriptionSchema)

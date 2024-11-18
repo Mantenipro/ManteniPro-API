@@ -9,6 +9,7 @@ const createError = require('http-errors'); // Asegúrate de tener esta dependen
 const reportUseCases = require('../usecases/report.usecase');
 const auth = require('../middleware/auth.middleware');
 const { canCreateTicket } = require('../utils/ticketUtils')
+const User = require('../models/user.created.perfil')
 
 const router = express.Router();
 
@@ -49,7 +50,7 @@ router.post('/s3/presigned-url', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo reporte
-router.post('/', auth , async (req, res) => {
+router.post('/', async (req, res) => {
     try {
       const {
         title,
@@ -71,10 +72,10 @@ router.post('/', auth , async (req, res) => {
       }
 
       // Verificar el límite de tickets
-      if (!(await canCreateTicket(req.user.id))) {
+      if (!(await canCreateTicket(company))) {
         return res.status(403).json({
           success: false,
-          error: 'Has alcanzado el límite de tickets para este mes'
+          error: 'Has alcanzado el límite de tickets para este mes, contacta a tu administrador'
         })
       }
 

@@ -26,7 +26,7 @@ const userPerfilSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ['admin', 'tecnico', 'usuario'],
-      default: 'admin' 
+      default: 'admin'
     },
     type: {
       type: String,
@@ -34,7 +34,7 @@ const userPerfilSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      default: null,
+      default: null
     },
     resetPasswordToken: {
       type: String
