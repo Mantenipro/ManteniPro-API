@@ -45,7 +45,6 @@ router.post('/s3/presigned-url', auth, async (req, res) => {
 router.get('/', auth, async (request, response) => {
   try {
     const companyId = request.user.company._id; // Asegúrate de que el user tenga el companyId
-    console.log('Company ID:', companyId); // Agrega esto para verificar el companyId
     const users = await usersUseCase.getUsersByCompany(companyId);
 
     response.json({
