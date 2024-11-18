@@ -37,15 +37,10 @@ router.post(
     switch (event.type) {
       case 'customer.created': {
         const customer = event.data.object
-        const productId = subscription.items.data[0].price.product
 
         try {
           // Procesar el evento de creación de cliente
-          await handleCustomerCreated(
-            subscription.customer,
-            subscription,
-            productId
-          )
+          await handleCustomerCreated(customer)
         } catch (error) {
           console.error('Error processing customer.created:', error)
         }
@@ -54,10 +49,11 @@ router.post(
       }
       case 'customer.subscription.created': {
         const subscription = event.data.object
+        const productId = subscription.items.data[0].price.product
 
         try {
           // Procesar el evento de creación de suscripción
-          await saveSubscription(subscription.customer, subscription)
+          await saveSubscription(subscription.customer, subscription, productId)
         } catch (error) {
           console.error(
             'Error processing customer.subscription.created:',
