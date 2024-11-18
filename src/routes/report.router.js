@@ -49,7 +49,7 @@ router.post('/s3/presigned-url', async (req, res) => {
 });
 
 // Endpoint para crear un nuevo reporte
-router.post('/', async (req, res) => {
+router.post('/', auth , async (req, res) => {
     try {
       const {
         title,
