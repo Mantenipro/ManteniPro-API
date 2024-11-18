@@ -11,7 +11,7 @@ const activateRouter = require('./routes/activate.router');
 const requestPasswordResetRouter = require('./routes/requestReset.router');
 const resetPasswordRouter = require('./routes/resetPassword.router');
 const assignmentRouter = require('./routes/assignment.router');
-const equipmentRouter = require('./routes/equipment.router'); // Importa el router de equipos
+const equipmentRouter = require('./routes/equipment.router'); 
 const paymentRoutes = require('./routes/paymentRoutes');
 const companiesRouter = require('./routes/companies.router');
 const productsRouter = require('./routes/products.router');
@@ -28,12 +28,12 @@ const app = express();
 
 app.use(cors());
 
-// Coloca la ruta del webhook ANTES de usar express.json()
+
 app.use('/webhook', webhookRouter);
 
 app.use(express.json());
 
-// Define las rutas
+
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/report', reportRouter);
@@ -42,7 +42,7 @@ app.use('/requestPasswordReset', requestPasswordResetRouter);
 app.use('/resetPassword', resetPasswordRouter);
 app.use('/activate', activateRouter);
 app.use('/assignment', assignmentRouter);
-app.use('/equipment', equipmentRouter); // Agrega la ruta para equipos
+app.use('/equipment', equipmentRouter); 
 app.use('/payments', paymentRoutes);
 app.use('/products', productsRouter);
 app.use('/companies', companiesRouter);

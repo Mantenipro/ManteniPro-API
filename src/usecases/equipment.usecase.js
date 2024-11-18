@@ -19,7 +19,7 @@ async function createEquipment(
       console.warn('Image field is missing or invalid');
     }
 
-    // Construir el objeto solo con los campos definidos
+   
     const equipmentData = {
       equipmentName,
       model,
@@ -32,7 +32,6 @@ async function createEquipment(
       qr,
     };
 
-    // Agregar manufactureDate solo si existe
     if (manufactureDate) {
       equipmentData.manufactureDate = manufactureDate;
     }
