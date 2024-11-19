@@ -5,12 +5,13 @@ const {
   getAllAssignments,
   addAssignment,
   updateAssignmentFieldsById,
-  updateAssignmentByReportId
+  updateAssignmentByReportId,
+  getAssignmentByReportId
 } = require('../usecases/assignment.usecase');
 const auth = require('../middleware/auth.middleware');
-const Report = require('../models/report.model');  // Importar el modelo Report
+const Report = require('../models/report.model');  
 
-// Ruta para obtener todas las asignaciones de un técnico específico
+
 router.get('/', auth, async (req, res) => {
   const technicianId = req.user.id;
   try {
@@ -21,7 +22,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Ruta para agregar una nueva asignación
+
 router.post('/', async (req, res) => {
   try {
     const newAssignment = await addAssignment(req.body);
@@ -31,7 +32,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Nueva ruta para actualizar los campos solution, finishedAt y VaBo por ID
+
 router.patch('/:id', auth, async (req, res) => {
   const assignmentId = req.params.id;
   const { solution, finishedAt, VaBo } = req.body;
@@ -49,26 +50,42 @@ router.patch('/:id', auth, async (req, res) => {
   }
 });
 
-// Nueva ruta para actualizar el equipo asignado basado en el ID del reporte
+
 router.patch('/byReport/:reportId', auth, async (req, res) => {
   const reportId = req.params.reportId;
-  const { solution, finishedAt, VaBo, status } = req.body;  // Ahora también extraemos 'status'
+  const { solution, finishedAt, VaBo, status } = req.body;  
 
   try {
-    // Pasamos 'status' a la función junto con los otros campos
+   
     const updatedAssignment = await updateAssignmentByReportId(reportId, { solution, finishedAt, VaBo, status });
 
     if (!updatedAssignment) {
       return res.status(404).json({ message: 'Asignación no encontrada para el reporte especificado' });
     }
 
-    // Verificar si los campos necesarios están completos para cambiar el estado a "completed"
+    
     if (solution && finishedAt && VaBo) {
-      // Actualizar el estado del reporte a "completed"
+    
       await Report.findByIdAndUpdate(reportId, { status: 'completed' }, { new: true });
     }
 
     res.json(updatedAssignment);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/byReport/:reportId', auth, async (req, res) => {
+  const reportId = req.params.reportId;
+
+  try {
+    const assignment = await getAssignmentByReportId(reportId);
+
+    if (!assignment) {
+      return res.status(404).json({ message: 'No se encontró una asignación para el reporte especificado' });
+    }
+
+    res.json(assignment);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
