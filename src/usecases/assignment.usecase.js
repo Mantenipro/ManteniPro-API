@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const Assignment = require('../models/assignment.model')
-const Report = require('../models/report.model')
+const Assignment = require('../models/assignment.model');
+const Report = require('../models/report.model');
 const CloseTicket = require('../models/closeTicket.model')
 
 // Función para obtener todas las asignaciones de un técnico específico
@@ -15,7 +15,7 @@ async function getAllAssignments(technicianId) {
   }
 }
 
-// Función para agregar una nueva asignación
+
 async function addAssignment(assignmentData) {
   try {
     const { technician, report, priority, status } = assignmentData
@@ -62,6 +62,24 @@ async function addAssignment(assignmentData) {
     throw new Error('Error al agregar la asignación: ' + error.message)
   }
 }
+
+async function getAssignmentByReportId(reportId) {
+  try {
+    const assignment = await Assignment.findOne({ report: reportId })
+      .populate('assignedTo') 
+      .populate('report'); 
+
+    if (!assignment) {
+      throw new Error('No se encontró una asignación para el reporte especificado');
+    }
+
+    return assignment;
+  } catch (error) {
+    throw new Error('Error al obtener la asignación por ID de reporte: ' + error.message);
+  }
+}
+
+
 
 module.exports = {
   getAllAssignments,

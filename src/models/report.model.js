@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 const mongoose = require("mongoose");
-const Counter = require('./counter.model'); // Asegúrate de ajustar la ruta según tu estructura de proyecto
-
+const Counter = require('./counter.model'); 
 const reportSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -15,18 +14,18 @@ const reportSchema = new mongoose.Schema({
     required: true
   },
   user: {
-    type: mongoose.Schema.Types.ObjectId, // Cambiar a ObjectId
-    ref: 'userPerfil', // Referencia al modelo 'User'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'userPerfil', 
     required: true
   },
   company: {
-    type: mongoose.Schema.Types.ObjectId, // Cambiar a ObjectId
-    ref: 'Company', // Referencia al modelo 'Company'
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Company', 
     required: true
   },
   equipment: {
-    type: mongoose.Schema.Types.ObjectId, // Nueva propiedad para ObjectId
-    ref: 'Equipment', // Referencia al modelo 'Equipment'
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Equipment', 
     required: true
   },
   assignedTo: {

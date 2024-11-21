@@ -7,7 +7,6 @@ const {
 } = require('../usecases/assignment.usecase');
 const auth = require('../middleware/auth.middleware');
 
-// Ruta para obtener todas las asignaciones de un técnico específico
 router.get('/', auth, async (req, res) => {
   const technicianId = req.user.id;
   try {
@@ -18,7 +17,7 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Ruta para agregar una nueva asignación
+
 router.post('/', async (req, res) => {
   try {
     const newAssignment = await addAssignment(req.body);
