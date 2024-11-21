@@ -23,6 +23,8 @@ const userActivateRouter = require('./routes/userActivate.router');
 const resendCodeRouter = require('./routes/resendCode.router');
 const changePasswordRouter = require('./routes/changePassword.router');
 const commentsRouter = require('./routes/comments.router');
+const closeTicketRouter = require('./routes/closeTicket.router');
+const supportRouter = require('./routes/support.router');
 
 const app = express();
 
@@ -53,6 +55,8 @@ app.use('/userActivate', userActivateRouter)
 app.use('/resend-activation-code', resendCodeRouter)
 app.use('/changePassword', changePasswordRouter)
 app.use('/comments', commentsRouter);
+app.use('/closeTicket', closeTicketRouter);
+app.use('/support', supportRouter);
 
 app.get('/', (request, response) => {
     response.json({

@@ -15,18 +15,6 @@ const assignmentSchema = new mongoose.Schema({
   assignedAt: {
     type: Date,
     default: Date.now
-  },
-  solution: {
-    type: String,
-    required: false // No es obligatorio
-  },
-  finishedAt: {
-    type: Date,
-    required: false // No es obligatorio
-  },
-  VaBo: {
-    type: String,
-    required: false // No es obligatorio
   }
 });
 

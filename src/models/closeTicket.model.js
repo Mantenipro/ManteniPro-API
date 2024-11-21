@@ -4,23 +4,30 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   orderId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'tickets'
+    ref: 'Reports',
+    required: true
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'userPerfil',
+    required: true
+  },
+  assignedAt: {
+    type: Date,
+    required: true
   },
   solution: {
-    type: String,
-    required: true
-  },
-  startDate: {
-    type: Date,
-    required: true
+    type: String
   },
   endDate: {
-    type: Date,
-    required: true
+    type: Date
   },
   clientApproval: {
-    type: String,
-    required: true
+    type: String
+  },
+  isCompleted: {
+    type: Boolean,
+    default: false
   }
 })
 
