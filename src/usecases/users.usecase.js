@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 const createError = require('http-errors') // Manejo de errores
 const user = require('../models/user.created.perfil') // Modelo de usuario
 const Company = require('../models/companies.model') // Modelo de empresa
@@ -16,7 +15,6 @@ async function create(userData) {
   try {
     // Verificar si el correo ya está en uso
     const userFound = await user.findOne({ email: userData.email })
-
 
     if (userFound) {
       // Si el correo ya existe, lanzamos un error
@@ -100,9 +98,40 @@ async function createUsers(userData, creatorId) {
     }
 
     // Obtener la compañía del administrador
-    const company = await Company.findById(creator.company)
+    const company = await Company.findById(creator.company).populate(
+      'subscription_type'
+    )
+
     if (!company) {
       throw createError(404, 'Company not found')
+    }
+
+    // Contar el número de administradores actuales
+    const adminCount = await user.countDocuments({
+      company: creator.company,
+      role: 'admin'
+    })
+
+    if (userData.role === 'admin') {
+      if (
+        company.subscription_type.productId === 'prod_R023GfgtRfPNC7' &&
+        adminCount >= 1
+      ) {
+        throw createError(
+          403,
+          'Las cuentas básicas solo pueden tener un administrador.'
+        )
+      }
+
+      if (
+        company.subscription_type.productId === 'prod_R024q1v8rr1odd' &&
+        adminCount >= 2
+      ) {
+        throw createError(
+          403,
+          'Las cuentas premium solo pueden tener dos administradores.'
+        )
+      }
     }
 
     // Encriptar la contraseña
@@ -142,7 +171,7 @@ async function createUsers(userData, creatorId) {
 
     return newUser
   } catch (error) {
-    throw createError(500, error.message);
+    throw createError(500, error.message)
   }
 }
 
@@ -159,47 +188,48 @@ async function getUsersByCompany(companyId) {
 // Función para obtener todos los usuarios
 async function getAllUsers() {
   try {
-    const users = await user.find(); // Busca todos los usuarios en la base de datos
-    return users; // Retorna la lista de usuarios
+    const users = await user.find() // Busca todos los usuarios en la base de datos
+    return users // Retorna la lista de usuarios
   } catch (error) {
-    throw createError(500, error.message); // Manejo de errores
+    throw createError(500, error.message) // Manejo de errores
   }
 }
 
 // Función para modificar un usuario
 async function updateUser(userId, userData) {
   if (!userId || !userData) {
-    throw createError(400, 'Invalid input');
+    throw createError(400, 'Invalid input')
   }
 
   try {
-    const userFound = await user.findById(userId);
+    const userFound = await user.findById(userId)
     if (!userFound) {
-      throw createError(404, 'User not found');
+      throw createError(404, 'User not found')
     }
 
     // Filtrar los datos permitidos, agregando 'photo' a la lista
-    const allowedUpdates = ['name', 'role', 'type', 'photo'];
-    const updates = Object.keys(userData).filter(key => allowedUpdates.includes(key));
+    const allowedUpdates = ['name', 'role', 'type', 'photo']
+    const updates = Object.keys(userData).filter(key =>
+      allowedUpdates.includes(key)
+    )
 
     // Actualizar los datos del usuario
     updates.forEach(key => {
-      userFound[key] = userData[key];
-    });
+      userFound[key] = userData[key]
+    })
 
     // Guardar los cambios
-    const updatedUser = await userFound.save();
+    const updatedUser = await userFound.save()
 
-    return updatedUser;
+    return updatedUser
   } catch (error) {
-    console.error('Error en updateUser:', error); // Registrar el error completo
+    console.error('Error en updateUser:', error) // Registrar el error completo
     if (error.status) {
-      throw error;
+      throw error
     }
-    throw createError(500, 'Error updating user');
+    throw createError(500, 'Error updating user')
   }
 }
-
 
 //Eliminar un usuario
 async function deleteUser(userId) {
@@ -242,8 +272,6 @@ async function unlockUser(email) {
     userFound.isLocked = false
     userFound.failedLoginAttempts = 0
     await userFound.save()
-  
-  
   } catch (error) {
     console.error('Error en unlockUser:', error) // Registrar el error completo
     if (error.status) {

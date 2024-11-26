@@ -11,7 +11,7 @@ const activateRouter = require('./routes/activate.router');
 const requestPasswordResetRouter = require('./routes/requestReset.router');
 const resetPasswordRouter = require('./routes/resetPassword.router');
 const assignmentRouter = require('./routes/assignment.router');
-const equipmentRouter = require('./routes/equipment.router'); 
+const equipmentRouter = require('./routes/equipment.router');
 const paymentRoutes = require('./routes/paymentRoutes');
 const companiesRouter = require('./routes/companies.router');
 const productsRouter = require('./routes/products.router');
@@ -23,17 +23,15 @@ const userActivateRouter = require('./routes/userActivate.router');
 const resendCodeRouter = require('./routes/resendCode.router');
 const changePasswordRouter = require('./routes/changePassword.router');
 const commentsRouter = require('./routes/comments.router');
+const supportRouter = require('./routes/support.router');
 
 const app = express();
 
 app.use(cors());
-
-
-app.use('/webhook', webhookRouter);
-
 app.use(express.json());
 
-
+// Rutas específicas
+app.use('/webhook', webhookRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/report', reportRouter);
@@ -42,22 +40,24 @@ app.use('/requestPasswordReset', requestPasswordResetRouter);
 app.use('/resetPassword', resetPasswordRouter);
 app.use('/activate', activateRouter);
 app.use('/assignment', assignmentRouter);
-app.use('/equipment', equipmentRouter); 
+app.use('/equipment', equipmentRouter);
 app.use('/payments', paymentRoutes);
 app.use('/products', productsRouter);
 app.use('/companies', companiesRouter);
 app.use('/cancel-subscription', cancelSubscriptionRouter);
 app.use('/reactivate-subscription', reactivateSubscriptionRouter);
 app.use('/api/s3', s3Router);
-app.use('/userActivate', userActivateRouter)
-app.use('/resend-activation-code', resendCodeRouter)
-app.use('/changePassword', changePasswordRouter)
+app.use('/userActivate', userActivateRouter);
+app.use('/resend-activation-code', resendCodeRouter);
+app.use('/changePassword', changePasswordRouter);
 app.use('/comments', commentsRouter);
+app.use('/support', supportRouter);
 
+// Ruta raíz
 app.get('/', (request, response) => {
-    response.json({
-        message: "ManteniPro APIv1"
-    });
+  response.json({
+    message: 'ManteniPro APIv1',
+  });
 });
 
 module.exports = app;
