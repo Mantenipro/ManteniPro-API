@@ -42,7 +42,7 @@ async function resendActivationCode(email) {
   })
   
   const activationPath = user.role === 'admin' ? 'activate' : 'userActivate'
-  const activationLink = `http://localhost:3000/${activationPath}?token=${token}`
+  const activationLink = `https://manteni-pro.vercel.app/${activationPath}?token=${token}`
   const transporter = await createTransporter()
   const mailOptions = {
     from: process.env.GMAIL_USER,

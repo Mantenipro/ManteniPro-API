@@ -31,7 +31,7 @@ router.post('/', async (request, response) => {
     await user.save()
 
     // Enviar correo electrónico con el enlace de restablecimiento
-    const resetLink = `http://localhost:3000/resetPassword/?q=${resetPasswordToken}`
+    const resetLink = `https://manteni-pro.vercel.app/resetPassword/?q=${resetPasswordToken}`
     const transporter = await createTransporter()
     const mailOptions = {
       from: process.env.GMAIL_USER,
