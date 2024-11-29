@@ -25,13 +25,14 @@ const changePasswordRouter = require('./routes/changePassword.router');
 const commentsRouter = require('./routes/comments.router');
 const supportRouter = require('./routes/support.router');
 
+
 const app = express();
 
 app.use(cors());
+app.use('/webhook', webhookRouter);
 app.use(express.json());
 
 // Rutas específicas
-app.use('/webhook', webhookRouter);
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/report', reportRouter);

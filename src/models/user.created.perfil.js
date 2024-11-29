@@ -54,6 +54,10 @@ const userPerfilSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Subscription'
     },
+    adminType: {
+      type: String,
+      enum: ['principal', 'secundario'],
+    },
     accountStatus: {
       //Solo para los usuarios creados por el administrador
       type: Boolean,

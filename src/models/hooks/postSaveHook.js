@@ -40,7 +40,8 @@ async function postSaveHook(doc) {
         type: 'defaultType',
         photo: 'defaultPhoto',
         company: newCompany._id,
-        formRegister: doc._id
+        formRegister: doc._id,
+        adminType: 'principal'
       }
 
       // Guarda el nuevo perfil de usuario

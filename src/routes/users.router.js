@@ -86,12 +86,12 @@ router.get('/profile', auth, async (request, response) => {
 
     // Obtener la información del usuario desde la base de datos usando el id del token
     const user = await usersUseCase.getById(userId);
-    const { name, role, email, password, photo, company } = user;
+    const { name, role, email, password, photo, company, adminType } = user;
 
     response.json({
       success: true,
-      data: { name, role, email, password, photo, company },
-    });
+      data: { id: userId, name, role, email, password, photo, company, adminType }
+    })
   } catch (error) {
     response.status(error.status || 500).json({
       success: false,
