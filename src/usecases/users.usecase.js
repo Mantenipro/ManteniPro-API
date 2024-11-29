@@ -100,9 +100,40 @@ async function createUsers(userData, creatorId) {
     }
 
     // Obtener la compañía del administrador
-    const company = await Company.findById(creator.company)
+    const company = await Company.findById(creator.company).populate(
+      'subscription_type'
+    )
+
     if (!company) {
       throw createError(404, 'Company not found')
+    }
+
+    // Contar el número de administradores actuales
+    const adminCount = await user.countDocuments({
+      company:  creator.company,
+      role: 'admin'
+    })
+
+    if (userData.role === 'admin') {
+      if (
+        company.subscription_type.productId === 'prod_R023GfgtRfPNC7' &&
+        adminCount >= 1
+      ) {
+        throw createError(
+          403,
+          'Las cuentas básicas solo pueden tener un administrador.'
+        )
+      }
+
+      if (
+        company.subscription_type.productId === 'prod_R024q1v8rr1odd' &&
+        adminCount >= 2
+      ) {
+        throw createError(
+          403,
+          'Las cuentas premium solo pueden tener dos administradores.'
+        )
+      }
     }
 
     // Encriptar la contraseña
@@ -128,7 +159,8 @@ async function createUsers(userData, creatorId) {
       expiresIn: '7d'
     })
 
-    const activationLink = `https://manteni-pro.vercel.app/userActivate?token=${token}`
+    const activationLink = `http://localhost:3000/userActivate?token=${token}`;
+
     const transporter = await createTransporter()
     const mailOptions = {
       from: process.env.GMAIL_USER,
