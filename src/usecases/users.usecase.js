@@ -17,7 +17,6 @@ async function create(userData) {
     // Verificar si el correo ya está en uso
     const userFound = await user.findOne({ email: userData.email })
 
-
     if (userFound) {
       // Si el correo ya existe, lanzamos un error
       throw createError(409, 'Email already in use')
@@ -110,7 +109,7 @@ async function createUsers(userData, creatorId) {
 
     // Contar el número de administradores actuales
     const adminCount = await user.countDocuments({
-      company:  creator.company,
+      company: creator.company,
       role: 'admin'
     })
 
@@ -142,14 +141,24 @@ async function createUsers(userData, creatorId) {
     // Generar un código de activación
     const activationCode = generateActivationCode()
 
-    // Crear el nuevo usuario
-    const newUser = new user({
+    // Crear el objeto de datos del nuevo usuario
+    const newUserData = {
       ...userData,
       password: hashedPassword, // Usar la contraseña encriptada
       company: company._id, // Asociar el usuario a la compañía del administrador
       activationCodeHash: await hashActivationCode(activationCode),
       activationCodeExpiration: moment().add(1, 'hours').toDate()
-    })
+    }
+
+    // Agregar propiedades específicas para administradores
+    if (userData.role === 'admin') {
+      newUserData.formRegister = creator.formRegister // Asociar el formulario de registro del administrador
+      newUserData.adminType = 'secundario' // Asignar el tipo de administrador
+      newUserData.accountStatus = true // Activar la cuenta automáticamente
+    }
+
+    // Crear el nuevo usuario
+    const newUser = new user(newUserData)
 
     // Guardar el nuevo usuario en la base de datos
     await newUser.save()
@@ -159,7 +168,7 @@ async function createUsers(userData, creatorId) {
       expiresIn: '7d'
     })
 
-    const activationLink = `http://localhost:3000/userActivate?token=${token}`;
+    const activationLink = `http://localhost:3000/userActivate?token=${token}`
 
     const transporter = await createTransporter()
     const mailOptions = {
@@ -174,7 +183,7 @@ async function createUsers(userData, creatorId) {
 
     return newUser
   } catch (error) {
-    throw createError(500, error.message);
+    throw createError(500, error.message)
   }
 }
 
@@ -191,47 +200,48 @@ async function getUsersByCompany(companyId) {
 // Función para obtener todos los usuarios
 async function getAllUsers() {
   try {
-    const users = await user.find(); // Busca todos los usuarios en la base de datos
-    return users; // Retorna la lista de usuarios
+    const users = await user.find() // Busca todos los usuarios en la base de datos
+    return users // Retorna la lista de usuarios
   } catch (error) {
-    throw createError(500, error.message); // Manejo de errores
+    throw createError(500, error.message) // Manejo de errores
   }
 }
 
 // Función para modificar un usuario
 async function updateUser(userId, userData) {
   if (!userId || !userData) {
-    throw createError(400, 'Invalid input');
+    throw createError(400, 'Invalid input')
   }
 
   try {
-    const userFound = await user.findById(userId);
+    const userFound = await user.findById(userId)
     if (!userFound) {
-      throw createError(404, 'User not found');
+      throw createError(404, 'User not found')
     }
 
     // Filtrar los datos permitidos, agregando 'photo' a la lista
-    const allowedUpdates = ['name', 'role', 'type', 'photo'];
-    const updates = Object.keys(userData).filter(key => allowedUpdates.includes(key));
+    const allowedUpdates = ['name', 'role', 'type', 'photo']
+    const updates = Object.keys(userData).filter((key) =>
+      allowedUpdates.includes(key)
+    )
 
     // Actualizar los datos del usuario
-    updates.forEach(key => {
-      userFound[key] = userData[key];
-    });
+    updates.forEach((key) => {
+      userFound[key] = userData[key]
+    })
 
     // Guardar los cambios
-    const updatedUser = await userFound.save();
+    const updatedUser = await userFound.save()
 
-    return updatedUser;
+    return updatedUser
   } catch (error) {
-    console.error('Error en updateUser:', error); // Registrar el error completo
+    console.error('Error en updateUser:', error) // Registrar el error completo
     if (error.status) {
-      throw error;
+      throw error
     }
-    throw createError(500, 'Error updating user');
+    throw createError(500, 'Error updating user')
   }
 }
-
 
 //Eliminar un usuario
 async function deleteUser(userId) {
@@ -274,8 +284,6 @@ async function unlockUser(email) {
     userFound.isLocked = false
     userFound.failedLoginAttempts = 0
     await userFound.save()
-  
-  
   } catch (error) {
     console.error('Error en unlockUser:', error) // Registrar el error completo
     if (error.status) {
