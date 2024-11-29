@@ -40,7 +40,7 @@ async function loginAttemptCounter(req, res, next) {
         user.resetPasswordExpires = Date.now() + 3600000 // 1 hora
 
         // Enviar correo electrónico con el enlace de restablecimiento
-        const resetLink = `http://localhost:3000/resetPassword/?q=${resetPasswordToken}`
+        const resetLink = `https://www.mantenipro.net/resetPassword/?q=${resetPasswordToken}`
         const transporter = await createTransporter()
         const mailOptions = {
           from: process.env.GMAIL_USER,

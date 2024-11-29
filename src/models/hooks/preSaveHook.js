@@ -17,7 +17,7 @@ async function preSaveHook(next) {
         expiresIn: '7d'
       })
 
-      const activationLink = `http://localhost:3000/activate?token=${token}`
+      const activationLink = `https://www.mantenipro.net/activate?token=${token}`
       const transporter = await createTransporter()
       const mailOptions = {
         from: process.env.GMAIL_USER,

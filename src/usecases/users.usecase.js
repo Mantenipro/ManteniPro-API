@@ -168,7 +168,7 @@ async function createUsers(userData, creatorId) {
       expiresIn: '7d'
     })
 
-    const activationLink = `http://localhost:3000/userActivate?token=${token}`
+    const activationLink = `https://www.mantenipro.net/userActivate?token=${token}`
 
     const transporter = await createTransporter()
     const mailOptions = {
