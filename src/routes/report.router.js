@@ -41,7 +41,7 @@ router.post('/s3/presigned-url', async (req, res) => {
         // Enviar la URL pre-firmada al frontend
         res.json({ url: signedUrl });
     } catch (error) {
-        console.error('Error generando la URL pre-firmada:', error);
+        //console.error('Error generando la URL pre-firmada:', error);
         res.status(500).json({
             success: false,
             error: 'Error generando la URL pre-firmada',
@@ -113,7 +113,7 @@ router.post('/', async (req, res) => {
         data: newReport
       })
     } catch (error) {
-        console.error('Error al crear el reporte:', error);
+        //console.error('Error al crear el reporte:', error);
         res.status(500).json({
             success: false,
             error: 'Error al crear el reporte',
@@ -136,7 +136,7 @@ router.get('/', async (req, res) => {
             data: reports,
         });
     } catch (error) {
-        console.error('Error al obtener los reportes:', error);
+        //console.error('Error al obtener los reportes:', error);
         res.status(500).json({
             success: false,
             error: 'Error al obtener los reportes',
@@ -173,7 +173,7 @@ router.get('/:id', async (req, res) => {
             data: { report },
         });
     } catch (error) {
-        console.error('Error al obtener el reporte:', error);
+        //console.error('Error al obtener el reporte:', error);
         res.status(500).json({
             success: false,
             error: 'Error al obtener el reporte',
@@ -231,7 +231,7 @@ router.put('/:id', async (req, res) => {
             data: updatedReport,
         });
     } catch (error) {
-        console.error('Error al modificar el reporte:', error);
+        //console.error('Error al modificar el reporte:', error);
         res.status(500).json({
             success: false,
             error: 'Error al modificar el reporte',
@@ -255,7 +255,7 @@ router.delete('/:id', async (req, res) => {
             data: deletedReport,
         });
     } catch (error) {
-        console.error('Error al eliminar el reporte:', error);
+        //console.error('Error al eliminar el reporte:', error);
         res.status(500).json({
             success: false,
             error: 'Error al eliminar el reporte',
@@ -281,7 +281,7 @@ router.get('/user/:userId', async (req, res) => {
             data: reports,
         });
     } catch (error) {
-        console.error('Error al obtener los reportes por usuario:', error);
+        //console.error('Error al obtener los reportes por usuario:', error);
         res.status(500).json({
             success: false,
             error: 'Error al obtener los reportes por usuario',
@@ -308,7 +308,7 @@ router.get('/company/:companyId', async (req, res) => {
             data: reports,
         });
     } catch (error) {
-        console.error('Error al obtener los reportes por compañía:', error);
+        //console.error('Error al obtener los reportes por compañía:', error);
         res.status(500).json({
             success: false,
             error: 'Error al obtener los reportes por compañía',
@@ -334,7 +334,7 @@ router.get('/technician/:technicianId', async (req, res) => {
             data: reports,
         });
     } catch (error) {
-        console.error('Error al obtener los reportes por técnico:', error);
+        //console.error('Error al obtener los reportes por técnico:', error);
         res.status(500).json({
             success: false,
             error: 'Error al obtener los reportes por técnico',

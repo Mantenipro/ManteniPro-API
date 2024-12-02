@@ -14,7 +14,7 @@ router.post('/', async (request, response) => {
     // Verificar y decodificar el token JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     const userId = decoded.id
-    console.log('User ID:', userId)
+    //console.log('User ID:', userId)
 
     // Buscar al usuario por el ID
     const user = await Register.findById(userId)

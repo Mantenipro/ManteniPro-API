@@ -16,7 +16,7 @@ async function createEquipment(
 ) {
   try {
     if (!image) {
-      console.warn('Image field is missing or invalid');
+      //console.warn('Image field is missing or invalid');
     }
 
    
@@ -40,7 +40,7 @@ async function createEquipment(
 
     return newEquipment;
   } catch (error) {
-    console.error('Error details:', error);
+    //console.error('Error details:', error);
     if (error.status) {
       throw error;
     } else {
@@ -59,7 +59,7 @@ async function getEquipmentByUserId(userId) {
 
     return userEquipment
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     if (error.status) {
       throw error
     } else {
@@ -82,7 +82,7 @@ async function editEquipment(id, updatedData) {
 
     return updatedEquipment
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     if (error.status) {
       throw error
     } else {
@@ -101,7 +101,7 @@ async function deleteEquipment(id) {
 
     return deletedEquipment
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     if (error.status) {
       throw error
     } else {
@@ -115,7 +115,7 @@ async function getAllEquipment() {
     const equipmentList = await Equipment.find()
     return equipmentList
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     throw createError(500, 'Error retrieving equipment list')
   }
 }
@@ -130,7 +130,7 @@ async function getEquipmentByCompanyId(companyId) {
 
     return equipment
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     if (error.status) {
       throw error
     } else {
@@ -149,7 +149,7 @@ async function getEquipmentById(equipmentId) {
 
     return equipment
   } catch (error) {
-    console.error('Error details:', error)
+    //console.error('Error details:', error)
     if (error.status) {
       throw error
     } else {
@@ -170,7 +170,7 @@ async function getEquipmentByOwner(ownerId) {
 
     return equipmentByOwner;
   } catch (error) {
-    console.error('Error details:', error);
+    //console.error('Error details:', error);
     if (error.status) {
       throw error;
     } else {

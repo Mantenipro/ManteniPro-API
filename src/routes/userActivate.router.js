@@ -12,7 +12,7 @@ router.post('/', async (request, response) => {
     try {
         // Verificar y decodificar el token JWT
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        console.log('Decoded token:', decoded) // Depurar el contenido del token
+        //console.log('Decoded token:', decoded) // Depurar el contenido del token
         const userId = decoded.id
     
         // Buscar al usuario por el ID

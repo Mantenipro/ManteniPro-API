@@ -14,7 +14,7 @@ const sendSupportEmail = async ({ name, email, message }) => {
     message
   })
 
-  console.log('Ticket guardado en la base de datos:', newTicket)
+  //console.log('Ticket guardado en la base de datos:', newTicket)
 
   try {
     const transporter = await createTransporter()
@@ -52,7 +52,7 @@ const sendSupportEmail = async ({ name, email, message }) => {
 
     return { ticketId } // Retorna el ID del ticket para su uso posterior
   } catch (error) {
-    console.error('Error al enviar correos:', error)
+    //console.error('Error al enviar correos:', error)
     throw new Error('No se pudo enviar el correo.')
   }
 }

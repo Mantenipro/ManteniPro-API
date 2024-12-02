@@ -32,7 +32,7 @@ router.post('/s3/presigned-url', async (req, res) => {
 
     res.json({ url: signedUrl })
   } catch (error) {
-    console.error('Error generando la URL pre-firmada:', error)
+    //console.error('Error generando la URL pre-firmada:', error)
     res.status(500).json({
       success: false,
       error: 'Error generating presigned URL'
@@ -92,8 +92,8 @@ router.post('/', authMiddleware, async (req, res) => {
 
     return res.status(201).json({ success: true, data: newEquipment });
   } catch (error) {
-    console.error('Error creating equipment:', error.message);
-    console.error('Error stack trace:', error.stack);
+    //console.error('Error creating equipment:', error.message);
+    //console.error('Error stack trace:', error.stack);
 
     if (error.status) {
       return res
@@ -120,8 +120,8 @@ router.get('/user', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: userEquipment })
   } catch (error) {
-    console.error('Error retrieving user equipment:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error retrieving user equipment:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     if (error.status) {
       return res
@@ -147,8 +147,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: updatedEquipment })
   } catch (error) {
-    console.error('Error editing equipment:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error editing equipment:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     if (error.status) {
       return res
@@ -170,8 +170,8 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: deletedEquipment })
   } catch (error) {
-    console.error('Error deleting equipment:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error deleting equipment:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     if (error.status) {
       return res
@@ -191,8 +191,8 @@ router.get('/', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: equipmentList })
   } catch (error) {
-    console.error('Error retrieving equipment list:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error retrieving equipment list:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     return res
       .status(500)
@@ -209,8 +209,8 @@ router.get('/company/:companyId', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: equipment })
   } catch (error) {
-    console.error('Error retrieving equipment by company:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error retrieving equipment by company:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     if (error.status) {
       return res
@@ -232,8 +232,8 @@ router.get('/:id', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: equipment })
   } catch (error) {
-    console.error('Error retrieving equipment by ID:', error.message)
-    console.error('Error stack trace:', error.stack)
+    //console.error('Error retrieving equipment by ID:', error.message)
+    //console.error('Error stack trace:', error.stack)
 
     if (error.status) {
       return res
@@ -254,8 +254,8 @@ router.get('/owner/:ownerId', authMiddleware, async (req, res) => {
 
     return res.status(200).json({ success: true, data: equipmentByOwner }); // Return the equipment list
   } catch (error) {
-    console.error('Error retrieving equipment by owner:', error.message);
-    console.error('Error stack trace:', error.stack);
+    //console.error('Error retrieving equipment by owner:', error.message);
+    //console.error('Error stack trace:', error.stack);
 
     if (error.status) {
       return res.status(error.status).json({ success: false, error: error.message });

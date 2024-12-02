@@ -36,7 +36,7 @@ router.post('/', auth, async (request, response) => {
       .status(200)
       .json({ success: true , message: 'La contraseña ha sido cambiada exitosamente.' });
   } catch (err) {
-    console.error('[Error en el servidor]', err)
+    //console.error('[Error en el servidor]', err)
     response.status(500).json({ message: 'Error en el servidor' })
   }
 })

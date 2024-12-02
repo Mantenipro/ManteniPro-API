@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
 
     res.json({ id: session.id })
   } catch (error) {
-    console.error('Error creando la sesión de pago:', error)
+    //console.error('Error creando la sesión de pago:', error)
     res.status(500).send('Error al crear la sesión de pago')
   }
 })

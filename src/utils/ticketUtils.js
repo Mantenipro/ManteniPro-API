@@ -4,7 +4,7 @@ const Subscription = require('../models/subscription.model')
 const User = require('../models/user.created.perfil') // Asegúrate de importar el modelo de User
 
 async function canCreateTicket(userId) {
-  console.log(`Verificando tickets para el usuario con ID: ${userId}`)
+  //console.log(`Verificando tickets para el usuario con ID: ${userId}`)
 
   // Obtener el usuario completo con la referencia a la compañía
   const userAdmin = await User.findById(userId).populate('company')
@@ -13,19 +13,19 @@ async function canCreateTicket(userId) {
   }
 
   const companyId = userAdmin.company._id
-  console.log(`ID de la compañía obtenida: ${companyId}`)
+  //console.log(`ID de la compañía obtenida: ${companyId}`)
 
   // Buscar la suscripción asociada a la compañía
   const subscription = await Subscription.findOne({ companyId: companyId })
   if (!subscription) {
     throw new Error(`No subscription found for company with ID: ${companyId}`)
   }
-  console.log(`Suscripción encontrada: ${subscription}`)
+  //console.log(`Suscripción encontrada: ${subscription}`)
 
   // Obtener el mes y año actuales
   const currentMonth = new Date().getMonth()
   const currentYear = new Date().getFullYear()
-  console.log(`Mes y año actuales: ${currentMonth + 1}/${currentYear}`)
+  //console.log(`Mes y año actuales: ${currentMonth + 1}/${currentYear}`)
 
   // Contar el número de tickets creados este mes para la compañía
   const ticketCount = await Ticket.countDocuments({
@@ -35,7 +35,7 @@ async function canCreateTicket(userId) {
       $lt: new Date(currentYear, currentMonth + 1, 1)
     }
   })
-  console.log(`Número de tickets creados este mes: ${ticketCount}`)
+  //console.log(`Número de tickets creados este mes: ${ticketCount}`)
 
   // Verificar el límite de tickets según el productId de la suscripción
   let hasReachedLimit = false
@@ -62,7 +62,7 @@ async function canCreateTicket(userId) {
     return false
   }
 
-  console.log('Límite de tickets no alcanzado')
+  //console.log('Límite de tickets no alcanzado')
   return true
 }
 

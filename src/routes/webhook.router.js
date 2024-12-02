@@ -42,7 +42,7 @@ router.post(
           // Procesar el evento de creación de cliente
           await handleCustomerCreated(customer)
         } catch (error) {
-          console.error('Error processing customer.created:', error)
+          //console.error('Error processing customer.created:', error)
         }
 
         break
@@ -74,16 +74,16 @@ router.post(
 // Función para manejar el evento customer.created
 async function handleCustomerCreated(customer) {
   try {
-    console.log('Handling customer.created for email:', customer.email)
+    //console.log('Handling customer.created for email:', customer.email)
 
     // Buscar la compañía usando el correo del cliente en el evento customer.created
     const company = await Company.findOne({ email: customer.email })
     if (!company) {
-      console.log('Company not found, skipping user creation...')
+      //console.log('Company not found, skipping user creation...')
       return
     }
 
-    console.log('Company found:', company)
+    //console.log('Company found:', company)
 
     // Crear un nuevo usuario con la referencia de la compañía
     let user = await User.findOne({ stripeCustomerId: customer.id })
@@ -96,33 +96,33 @@ async function handleCustomerCreated(customer) {
       })
 
       await user.save()
-      console.log('New user created:', user)
+      //console.log('New user created:', user)
 
       // Actualizar el campo stripeCustomerId en la compañía
       company.stripeCustomerId = customer.id
       await company.save()
-      console.log('Company updated with stripeCustomerId:', customer.id)
+      //console.log('Company updated with stripeCustomerId:', customer.id)
     } else {
-      console.log('User already exists with stripeCustomerId:', customer.id)
+      //console.log('User already exists with stripeCustomerId:', customer.id)
     }
   } catch (error) {
-    console.error('Error handling customer.created:', error)
+    //console.error('Error handling customer.created:', error)
   }
 }
 
 // Función para guardar la información de la suscripción
 async function saveSubscription(customerId, subscriptionData, productId) {
   try {
-    console.log('Searching for user with stripeCustomerId:', customerId)
+    //console.log('Searching for user with stripeCustomerId:', customerId)
 
     // Buscar el usuario en la base de datos de User
     let user = await User.findOne({ stripeCustomerId: customerId })
     if (!user) {
-      console.log('User not found, waiting for user creation...')
+      //console.log('User not found, waiting for user creation...')
       await delay(2000) // Esperar 2 segundos antes de volver a intentar
       user = await User.findOne({ stripeCustomerId: customerId })
       if (!user) {
-        console.log('User still not found, skipping subscription update...')
+        //console.log('User still not found, skipping subscription update...')
         return
       }
     }
@@ -130,7 +130,7 @@ async function saveSubscription(customerId, subscriptionData, productId) {
     // Buscar la compañía asociada al usuario
     const company = await Company.findById(user.companyId)
     if (!company) {
-      console.log('Company not found, skipping subscription update...')
+      //console.log('Company not found, skipping subscription update...')
       return
     }
 
@@ -186,7 +186,7 @@ async function saveSubscription(customerId, subscriptionData, productId) {
     }
 
     // Crear una nueva suscripción
-    console.log('Creating new subscription...')
+    //console.log('Creating new subscription...')
     const subscription = new Subscription({
       userId: user._id,
       stripeSubscriptionId: subscriptionData.id,
@@ -200,7 +200,7 @@ async function saveSubscription(customerId, subscriptionData, productId) {
 
     // Guardar la suscripción en la base de datos
     await subscription.save()
-    console.log('Subscription saved:', subscription)
+    //console.log('Subscription saved:', subscription)
 
     // Actualizar el documento de Company con el ID de la suscripción
     company.subscription_type = subscription._id
@@ -210,9 +210,9 @@ async function saveSubscription(customerId, subscriptionData, productId) {
       'Company updated with subscription ID and status:',
       subscription._id
     )
-    console.log('Subscription saved successfully')
+    //console.log('Subscription saved successfully')
   } catch (error) {
-    console.error('Error saving subscription:', error)
+    //console.error('Error saving subscription:', error)
   }
 }
 

@@ -47,7 +47,7 @@ router.post('/', async (request, response) => {
       message: 'Se ha enviado un correo para restablecer la contraseña.'
     })
   } catch (error) {
-    console.error('Error al enviar el token de restablecimiento:', error)
+    //console.error('Error al enviar el token de restablecimiento:', error)
     response
       .status(500)
       .json({ message: 'Error al enviar el token de restablecimiento', error })

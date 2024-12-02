@@ -27,7 +27,7 @@ router.post('/presigned-url', async (req, res) => {
     const url = await getSignedUrl(s3, command, { expiresIn: 60 }); // URL válida por 60 segundos
     res.json({ url });
   } catch (err) {
-    console.error('Error al generar la URL pre-firmada', err);
+    //console.error('Error al generar la URL pre-firmada', err);
     return res.status(500).json({ error: 'Error al generar la URL pre-firmada' });
   }
 });

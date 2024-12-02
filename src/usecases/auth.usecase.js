@@ -18,9 +18,9 @@ async function login(email, password) {
 
   if (!isPasswordValid) {
     // Añadir logs para depurar las contraseñas
-    console.log('Contraseña proporcionada:', password)
-    console.log('Contraseña almacenada:', user.password)
-    console.log('Resultado de la comparación:', isPasswordValid)
+    //console.log('Contraseña proporcionada:', password)
+    //console.log('Contraseña almacenada:', user.password)
+    //console.log('Resultado de la comparación:', isPasswordValid)
     // Lanzar un error 401 si la contraseña es incorrecta
     throw createError(401, 'Contraseña incorrecta')
   }
@@ -30,7 +30,7 @@ async function login(email, password) {
     // Verificar si la cuenta está activa (buscar el mismo usuario pero con populate para obtener los datos relacionados)
     const userWithForm = await users.findOne({ email }).populate('formRegister')
 
-    // Añadimos un console.log para verificar si el populate trae los datos esperados
+    // Añadimos un ////console.log para verificar si el populate trae los datos esperados
     console.log(
       'Resultado del populate:',
       JSON.stringify(userWithForm, null, 2)
@@ -53,15 +53,15 @@ async function login(email, password) {
     }
 
     // Imprimir el objeto user en la consola
-    console.log('Usuario encontrado y cuenta activada:', userWithForm)
+    //console.log('Usuario encontrado y cuenta activada:', userWithForm)
   } else {
     // Si el rol es "user" o "tecnico", verificar la activación de la cuenta
     if (!user.accountStatus) {
-      console.log('Estado de activación de la cuenta:', user.accountStatus)
+      //console.log('Estado de activación de la cuenta:', user.accountStatus)
       throw createError(403, 'Cuenta no activada')
     }
     // Imprimir el objeto user en la consola
-    console.log('Usuario encontrado y cuenta activada:', user)
+    //console.log('Usuario encontrado y cuenta activada:', user)
   }
 
   const token = jwt.sign({ id: user._id })
