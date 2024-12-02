@@ -17,8 +17,8 @@ router.post('/', async (req, res) => {
         }
       ],
       mode: 'subscription', // O "payment" si es un pago único
-      success_url: 'https://manteni-pro.vercel.app/ticketsDashboard', // URL de redirección en caso de éxito
-      cancel_url: 'https://manteni-pro.vercel.app/Suscription' // URL de redirección en caso de cancelación
+      success_url: 'https://www.mantenipro.net/ticketsDashboard', // URL de redirección en caso de éxito
+      cancel_url: 'https://www.mantenipro.net/Suscription' // URL de redirección en caso de cancelación
     })
 
     res.json({ id: session.id })
