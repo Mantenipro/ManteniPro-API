@@ -23,7 +23,7 @@ const generatePresignedUrl = async (fileName, fileType) => {
     const url = await getSignedUrl(s3, command, { expiresIn: 60 * 5 }); 
     return url;
   } catch (err) {
-    console.error('Error generando URL firmada:', err);
+    //console.error('Error generando URL firmada:', err);
     throw new Error('No se pudo generar la URL firmada');
   }
 };

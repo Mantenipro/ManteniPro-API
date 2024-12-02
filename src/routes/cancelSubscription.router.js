@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
 
   // Verificar si subscriptionId está presente
   if (!subscriptionId) {
-    console.log('Subscription ID is missing')
+    //console.log('Subscription ID is missing')
     return res.status(400).json({ error: 'Subscription ID is required' })
   }
 
@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     const subscription = await stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true
     })
-    console.log('Subscription suspended successfully:', subscription)
+    //console.log('Subscription suspended successfully:', subscription)
 
     // Si la suscripción se suspende correctamente, actualiza la base de datos
     if (subscription.cancel_at_period_end) {
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
         .populate('companyId') // Populate para traer la referencia a la compañía
         .exec()
 
-      console.log('Subscription document found:', subscriptionDoc)
+      //console.log('Subscription document found:', subscriptionDoc)
 
       if (!subscriptionDoc) {
         console.log(
@@ -48,10 +48,10 @@ router.post('/', async (req, res) => {
 
       const company = subscriptionDoc.companyId
 
-      console.log('Company found:', company)
+      //console.log('Company found:', company)
 
       if (!company) {
-        console.log('Company not found for subscription ID:', subscriptionId)
+        //console.log('Company not found for subscription ID:', subscriptionId)
         return res.status(404).json({ error: 'Company not found' })
       }
 
@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
       await company.save()
       await subscriptionDoc.save() // Guarda la instancia de suscripción
 
-      console.log('Company subscription status updated in the database')
+      //console.log('Company subscription status updated in the database')
 
       return res.status(200).json({
         message: 'Subscription suspended and database updated successfully'

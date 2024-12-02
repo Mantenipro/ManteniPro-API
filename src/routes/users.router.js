@@ -33,7 +33,7 @@ router.post('/s3/presigned-url', auth, async (req, res) => {
 
     res.json({ url: signedUrl });
   } catch (error) {
-    console.error('Error generando la URL pre-firmada:', error);
+    //console.error('Error generando la URL pre-firmada:', error);
     res.status(500).json({
       success: false,
       error: 'Error generating presigned URL',

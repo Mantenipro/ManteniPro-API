@@ -9,7 +9,7 @@ async function postSaveHook(doc) {
       const existingUser = await userPerfil.findOne({ email: doc.email })
 
       if (existingUser) {
-        console.error(`El correo ${doc.email} ya tiene un perfil creado.`)
+        //console.error(`El correo ${doc.email} ya tiene un perfil creado.`)
         return
       }
 
@@ -28,7 +28,7 @@ async function postSaveHook(doc) {
       // Guarda la nueva compañía
       const newCompany = new Company(companyData)
       await newCompany.save()
-      console.log('Compañía creada con éxito.')
+      //console.log('Compañía creada con éxito.')
 
 
       const perfilData = {
@@ -38,7 +38,7 @@ async function postSaveHook(doc) {
         password: doc.password,
         role: 'admin',
         type: 'defaultType',
-        photo: 'defaultPhoto',
+        photo: 'https://mantenipro.s3.us-east-2.amazonaws.com/profilepic.png',  // URL de la foto predeterminada
         company: newCompany._id,
         formRegister: doc._id,
         adminType: 'principal'
@@ -47,10 +47,10 @@ async function postSaveHook(doc) {
       // Guarda el nuevo perfil de usuario
       const newUserPerfil = new userPerfil(perfilData)
       await newUserPerfil.save()
-      console.log('Perfil de usuario creado con éxito.')
+      //console.log('Perfil de usuario creado con éxito.')
 
     } catch (error) {
-      console.error('Error en el post-save hook:', error)
+      //console.error('Error en el post-save hook:', error)
     }
   })
 }

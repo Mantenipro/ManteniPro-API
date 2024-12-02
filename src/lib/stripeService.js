@@ -35,7 +35,7 @@ async function getProductsAndPrices() {
     // Retornar los productos con sus precios asociados (ordenados de menor a mayor)
     return sortedProductDetails
   } catch (error) {
-    console.error('Error fetching products and prices from Stripe:', error)
+    //console.error('Error fetching products and prices from Stripe:', error)
     throw error
   }
 }

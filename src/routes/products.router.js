@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     const products = await getProductsAndPrices()
     res.status(200).json(products)
   } catch (error) {
-    console.error(error)
+    //console.error(error)
     res.status(500).json({ error: 'Error fetching products and prices' })
   }
 })

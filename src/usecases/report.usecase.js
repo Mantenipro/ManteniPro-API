@@ -34,7 +34,7 @@ async function createReport(title, image, description, user, company, equipment,
 
         return newReport;
     } catch (error) {
-        throw createError(500, `Error al crear el reporte: ${error.message}`);
+        throw createError(500, `Debes estar suscrito para poder enviar reportes: ${error.message}`);
     }
 }
 

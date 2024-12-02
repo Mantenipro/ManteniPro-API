@@ -14,7 +14,7 @@ async function getAccessToken() {
       )
       await regenerateRefreshToken()
     } else {
-      console.error('Error obteniendo el token de acceso:', error)
+      //console.error('Error obteniendo el token de acceso:', error)
     }
     throw error
   }
@@ -38,10 +38,10 @@ async function regenerateRefreshToken() {
         .join('\n')
 
       fs.writeFileSync(envFilePath, updatedEnvConfig, 'utf8')
-      console.log('Nuevo refresh token generado y almacenado en .env.')
+      //console.log('Nuevo refresh token generado y almacenado en .env.')
     }
   } catch (error) {
-    console.error('Error regenerando el refresh token:', error)
+    //console.error('Error regenerando el refresh token:', error)
     throw error
   }
 }
