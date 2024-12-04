@@ -20,9 +20,7 @@ router.post('/', async (request, response) => {
       return response.status(403).json({ success: false, message: 'Cuenta bloqueada' })
     }
 
-    if(user.role !== 'admin') {
-      return response.status(403).json({ success: false, message: 'No tienes permisos para realizar esta acción contacta a tu administrador' })
-    }
+    
 
     // Generar token de restablecimiento de contraseña
     const resetPasswordToken = crypto.randomBytes(32).toString('hex')
@@ -31,7 +29,7 @@ router.post('/', async (request, response) => {
     await user.save()
 
     // Enviar correo electrónico con el enlace de restablecimiento
-    const resetLink = `https://manteni-pro.vercel.app/resetPassword/?q=${resetPasswordToken}`
+    const resetLink = `https://www.mantenipro.net/resetPassword/?q=${resetPasswordToken}`
     const transporter = await createTransporter()
     const mailOptions = {
       from: process.env.GMAIL_USER,
