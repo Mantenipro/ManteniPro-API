@@ -175,9 +175,102 @@ async function createUsers(userData, creatorId) {
       from: process.env.GMAIL_USER,
       to: userData.email,
       subject: 'Activación de tu cuenta',
-      html: `<p>Tu código de activación es: ${activationCode} Tienes una hora para activarla.</p> 
-             <p>Por favor, haz clic en el siguiente enlace para activar tu cuenta: <a href="${activationLink}">Activar Cuenta. </a></p>`
-    }
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 0;
+              padding: 0;
+              background-color: #f4f4f9;
+            }
+            .outer-table {
+              width: 100%;
+              background-color: #232c48;
+              padding: 40px 20px;
+              text-align: center;
+            }
+            .inner-table {
+              background-color: #ffffff;
+              color: #333;
+              border-radius: 8px;
+              padding: 30px;
+              width: 80%;
+              max-width: 600px;
+              margin: 0 auto;
+              position: relative;
+            }
+            h1 {
+              font-size: 24px;
+              color: #4361b2;
+              margin-bottom: 20px;
+            }
+            p {
+              font-size: 16px;
+              margin-bottom: 15px;
+              line-height: 1.5;
+            }
+            .highlight {
+              font-weight: bold;
+              color: #4361b2;
+            }
+            .footer {
+              margin-top: 30px;
+              font-size: 14px;
+              color: #777;
+            }
+            .logo {
+              position: absolute;
+              bottom: 20px;
+              right: 20px;
+              max-width: 100px;
+            }
+            .button {
+              display: inline-block;
+              padding: 10px 20px;
+              margin-top: 20px;
+
+              color: #ffffff; 
+              text-decoration: none;
+              border-radius: 5px;
+              font-size: 16px;
+            }
+           
+          </style>
+        </head>
+        <body>
+          <table class="outer-table" cellpadding="0" cellspacing="0">
+            <tr>
+              <td>
+                <table class="inner-table" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td>
+                      <h1>Activación de tu cuenta</h1>
+                      <p>Tu código de activación es:</p>
+                      <p class="highlight">${activationCode}</p>
+                      <p>Tienes <span class="highlight">1 hora</span> para activarla.</p>
+                      <p>Por favor, haz clic en el siguiente enlace para activar tu cuenta:</p>
+                      <a href="${activationLink}" class="button">Activar Cuenta</a>
+                      <p class="footer">Si no solicitaste esta activación, ignora este correo.</p>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <img src="https://mantenipro.s3.us-east-2.amazonaws.com/logo.png" alt="Mantenipro Logo" class="logo">
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `,
+    };
 
     await transporter.sendMail(mailOptions)
 

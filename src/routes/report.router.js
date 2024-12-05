@@ -52,74 +52,75 @@ router.post('/s3/presigned-url', async (req, res) => {
 // Endpoint para crear un nuevo reporte
 router.post('/', async (req, res) => {
     try {
-      const {
-        title,
-        image,
-        description,
-        user,
-        company,
-        equipment,
-        status,
-        priority
-      } = req.body
+        const {
+            title,
+            image,
+            description,
+            user,
+            company,
+            equipment,
+            status,
+            priority,
+        } = req.body;
 
-      // Validar campos requeridos
-      if (!title || !description || !user || !company || !equipment) {
-        return res.status(400).json({
-          success: false,
-          error: 'Faltan campos requeridos'
-        })
-      }
+        // Validar campos requeridos
+        if (!title || !description || !user || !company || !equipment) {
+            return res.status(400).json({
+                success: false,
+                error: 'Faltan campos requeridos',
+            });
+        }
 
-      // Verificar el límite de tickets
-      if (!(await canCreateTicket(company))) {
-        return res.status(403).json({
-          success: false,
-          error: 'Has alcanzado el límite de tickets para este mes, contacta a tu administrador'
-        })
-      }
+        // Verificar el límite de tickets antes de crear el reporte
+        const canCreate = await canCreateTicket(user);
+        if (!canCreate) {
+            return res.status(403).json({
+                success: false,
+                error: 'Has alcanzado el límite de tickets permitidos.',
+            });
+        }
 
-      // Validar que el status esté dentro de los valores permitidos si se proporciona
-      const validStatuses = ['pending', 'in-progress', 'completed']
-      if (status && !validStatuses.includes(status)) {
-        return res.status(400).json({
-          success: false,
-          error: 'Estado inválido'
-        })
-      }
+        // Validar el estado si se proporciona
+        const validStatuses = ['pending', 'in-progress', 'completed'];
+        if (status && !validStatuses.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Estado inválido',
+            });
+        }
 
-      // Validar que el priority esté dentro de los valores permitidos
-      const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad']
-      if (priority && !validPriorities.includes(priority)) {
-        return res.status(400).json({
-          success: false,
-          error: 'Prioridad inválida'
-        })
-      }
+        // Validar la prioridad si se proporciona
+        const validPriorities = ['Baja', 'Media', 'Alta', 'Sin Prioridad'];
+        if (priority && !validPriorities.includes(priority)) {
+            return res.status(400).json({
+                success: false,
+                error: 'Prioridad inválida',
+            });
+        }
 
-      const newReport = await Report.create({
-        title,
-        image,
-        description,
-        user,
-        company,
-        equipment,
-        status, // Incluir status solo si se proporciona
-        priority: priority || 'Sin Prioridad' // Asignar valor predeterminado si no se especifica
-      })
+        const newReport = await Report.create({
+            title,
+            image,
+            description,
+            user,
+            company,
+            equipment,
+            status, // Incluir el estado solo si se proporciona
+            priority: priority || 'Sin Prioridad',
+        });
 
-      res.status(201).json({
-        success: true,
-        data: newReport
-      })
+        res.status(201).json({
+            success: true,
+            data: newReport,
+        });
     } catch (error) {
-        //console.error('Error al crear el reporte:', error);
         res.status(500).json({
             success: false,
             error: 'Error al crear el reporte',
         });
     }
 });
+
 
 // Endpoint para obtener todos los reportes, con opción de filtrar por prioridad
 router.get('/', async (req, res) => {
