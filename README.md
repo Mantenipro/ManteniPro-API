@@ -1,48 +1,65 @@
 
 # MateniPro API
 
-This is the API for managing maintenance operations in the MateniPro system.
+This API manages users, teams, technical reports, customer support, and subscriptions. It integrates authentication (OAuth2, JWT), payments with Stripe, file handling in AWS S3, and email notifications. Designed for technical support and maintenance systems, it offers task assignment, ticket tracking, and automated management of subscriptions and payments.
+
+## Features
+
+- **Maintenance Management:** Tracks equipment, reports, user profiles, and support requests for maintenance.
+- **Secure Authentication:** Uses JWT, OAuth2, and bcryptjs for secure login and password management.
+- **Cloud Integration:** Integrates AWS S3 for file handling and Stripe for payments and subscriptions.
+- **Scalable Data Models:** Uses Mongoose for flexible schemas, including equipment, reports, and users.
+- **Email Automation:** Automates notifications and communications with Nodemailer.
 
 ## Getting Started
 
-First, run the development server:
+To get started with the project, follow these steps:
 
-```bash
-npm run dev
-```
+1. Clone this repository to your Linux console:
+   ```bash
+   git clone <repository-url>
+   cd <project-directory>
 
-Open `http://localhost:3000` with your browser to test the API locally.
 
-### API Routes
-
-You can start testing the API by editing `index.js` or adding routes in the `routes` directory. The server will auto-reload when you modify the files.
-
-## Deployment on Render
-
-To deploy this API on Render, follow these steps:
-
-1. Push your code to a Git repository (e.g., GitHub or GitLab).
-2. Sign in to [Render](https://render.com) and create a new Web Service.
-3. Connect your Git repository.
-4. Select `Node.js` as the environment and use the default settings.
-5. Set the build command to:
-
+2. Install dependencies:
    ```bash
    npm install
-   ```
 
-6. Set the start command to:
 
+3. Start the development server:
    ```bash
-   npm start
-   ```
+    npm run dev
 
-7. Add any required environment variables (e.g., `MONGO_URI`, `JWT_SECRET`, etc.).
-8. Click "Create Web Service" and wait for Render to deploy your API.
 
-Once deployed, your API will be accessible at the URL provided by Render.
+## How to Run
 
-## Learn More
+1. **Install dependencies**
+
+    ```bash
+    npm install
+    ```
+
+2. **Create an `.env` file**
+
+    ```bash
+    touch .env
+    ```
+
+    You can find the keys needed in the `example.env` file.
+
+3. **Run in development mode**
+
+    ```bash
+    npm run dev
+    ```
+
+4. **Run in production mode**
+
+    ```bash
+    npm start
+    ```
+
+    ## Learn More
 
 To learn more about Express, Mongoose, and using environment variables, check out the following resources:
 
