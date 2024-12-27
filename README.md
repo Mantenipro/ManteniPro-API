@@ -17,8 +17,8 @@ To get started with the project, follow these steps:
 
 1. Clone this repository to your Linux console:
    ```bash
-   git clone <repository-url>
-   cd <project-directory>
+   git clone git@github.com:Mantenipro/ManteniPro-API.git
+   cd ManteniPro-API
 
 
 2. Install dependencies:
